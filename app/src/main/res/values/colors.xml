@@ -5,4 +5,5 @@
     <color name="colorAccent">#90ff40</color>
     <color name="color_message_bg">#adf1ee</color>
     <color name="color_message_bg_guest">#bde491</color>
+    <color name="color_connection_bg">#7e7e7e</color>
 </resources>

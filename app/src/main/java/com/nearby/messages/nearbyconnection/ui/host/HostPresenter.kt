@@ -1,4 +1,4 @@
-package com.nearby.messages.nearbyconnection.ui.chat
+package com.nearby.messages.nearbyconnection.ui.host
 
 import android.content.Context
 import android.util.Log
@@ -10,7 +10,6 @@ import com.google.android.gms.nearby.connection.ConnectionResolution
 import com.google.android.gms.nearby.connection.ConnectionsClient
 import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
 import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
-import com.google.android.gms.nearby.connection.DiscoveryOptions
 import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 import com.google.android.gms.nearby.connection.Payload
 import com.google.android.gms.nearby.connection.PayloadCallback
@@ -19,7 +18,7 @@ import com.google.android.gms.nearby.connection.Strategy
 import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
 
-class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Context = AppModule.application) : BasePresenter<ChatMvp.View>(chatView), ChatMvp.Presenter {
+class HostPresenter constructor(hostView: HostMvp.View, private val context: Context = AppModule.application) : BasePresenter<HostMvp.View>(hostView), HostMvp.Presenter {
 
     private lateinit var connectionsClient: ConnectionsClient
 
@@ -48,7 +47,7 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
                 endpointId: String, discoveredEndpointInfo: DiscoveredEndpointInfo) {
             Log.v("SOGOVOREC", "An endpoint was found: " + endpointId)
             avaibleGuests[endpointId] = "found"
-            view?.updateConnectionList(avaibleGuests.values.toMutableList())
+//            view?.updateConnectionList(avaibleGuests.values.toMutableList())
 //            view?.showAvaibleDevicesDialog(avaibleGuests)
 //            connectionsClient.requestConnection(ownerUsername, endpointId, connectionLifecycleCallback)
             // An endpoint was found!
@@ -74,7 +73,6 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
                 ConnectionsStatusCodes.STATUS_OK -> {
                     avaibleGuests[endpointId] = "connected"
 //                    stopAdvertising()
-                    stopDiscovery()
                     opponentEndpointId.add(endpointId)
 //                    view?.setChattiningTitle(guestNames)
                     Log.v("SOGOVOREC1", "We're connected! Can now start sending and receiving data. " + endpointId)
@@ -83,21 +81,21 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
                     avaibleGuests[endpointId] = "rejeceted"
 //                    stopAdvertising()
-                    stopDiscovery()
                     guestNames.remove(endpointId)
                     Log.v("SOGOVOREC2", "We're connected! Can now start sending and receiving data. " + endpointId)
                     if (opponentEndpointId.size < 1) {
 //                        view?.setDisconnected()
+                        stopAdvertising()
                     }
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
                     avaibleGuests[endpointId] = "error"
                     guestNames.remove(endpointId)
 //                    stopAdvertising()
-                    stopDiscovery()
                     Log.v("SOGOVOREC3", "The connection broke before it was able to be accepted. " + endpointId)
                     if (opponentEndpointId.size < 1) {
 //                        view?.setDisconnected()
+                        stopAdvertising()
                     }
                 }
             }// We're connected! Can now start sending and receiving data.
@@ -113,9 +111,10 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
             opponentEndpointId.remove(endpointId)
             guestNames.remove(endpointId)
 //            view?.setChattiningTitle(guestNames)
-            stopDiscovery()
+            stopAdvertising()
             if (opponentEndpointId.size < 1) {
 //                view?.setDisconnected()
+                stopAdvertising()
             }
         }
     }
@@ -124,59 +123,26 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         connectionsClient = Nearby.getConnectionsClient(context)
     }
 
-    override fun addMessage(message: Pair<Pair<String, String>, Int>) {
-        messageList.add(message)
-        view?.setMessages(messageList)
-    }
-
-    override fun sendMessage(message: String) {
-        for (guest in opponentEndpointId) {
-            Log.v("POSILJAM", guestNames[guest])
-            connectionsClient.sendPayload(
-                    guest, Payload.fromBytes(message.toByteArray()))
-        }
-    }
-
-    override fun stopDiscovery() {
-        Log.v("POVEZAVA", "stopped discovery")
-        connectionsClient.stopDiscovery()
-    }
-
-    override fun startDiscovery(packageName: String) {
-        Log.v("POVEZAVA", "started discovery")
-//        connectionsClient.stopDiscovery()
-        connectionsClient.startDiscovery(
-                packageName, endpointDiscoveryCallback, DiscoveryOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build())
-    }
-
     override fun stopAllConnections() {
         connectionsClient.stopAllEndpoints()
     }
 
-    override fun acceptConnection(user: String, endpointId: String) {
-        guestNames[endpointId] = user
-        // Automatically accept the connection on both sides.
-        connectionsClient.acceptConnection(endpointId, payloadCallback)
+
+    override fun startAdvertising(username: String, packageName: String) {
+        Log.v("POVEZAVA", "started advertising")
+        ownerUsername = username
+//        connectionsClient.stopAdvertising()
+        connectionsClient.startAdvertising(
+                username, packageName, connectionLifecycleCallback, AdvertisingOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build())
     }
 
-    override fun getAvaibleGuests(): HashMap<String, String>{
-        return avaibleGuests
+    override fun stopAdvertising() {
+        Log.v("POVEZAVA", "stopped advertising")
+        connectionsClient.stopAdvertising()
     }
 
-    override fun requestConnection(endpointId: String) {
-        if (avaibleGuests[endpointId] != null && avaibleGuests[endpointId] == "connected") {
-            connectionsClient.disconnectFromEndpoint(endpointId)
-            avaibleGuests[endpointId] = "disconnected"
-            opponentEndpointId.remove(endpointId)
-            guestNames.remove(endpointId)
-            view?.setChattiningTitle(guestNames)
-            stopDiscovery()
-            if (opponentEndpointId.size < 1) {
-//                view?.setDisconnected()
-            }
-        } else if (avaibleGuests[endpointId] != null) {
-            connectionsClient.requestConnection(ownerUsername, endpointId, connectionLifecycleCallback)
-        }
-
+    override fun addMessage(message: Pair<Pair<String, String>, Int>) {
+        messageList.add(message)
+        view?.setMessages(messageList)
     }
 }

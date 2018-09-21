@@ -6,66 +6,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/messages_main">
 
-    <TextView
-        android:id="@+id/messages_guest_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:background="@color/colorAccent"
-        android:visibility="gone"
-        tools:text="Example name"
-        tools:visibility="visible"/>
-
     <EditText
-        android:id="@+id/messages_user"
+        android:id="@+id/connection_user"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your username"
-        app:layout_constraintTop_toBottomOf="@+id/messages_guest_name"/>
+        android:hint="Enter your username"/>
 
     <Button
-        android:id="@+id/message_connect"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/messages_user"
-        android:text="SEARCH FOR DEVICES"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/messages_content"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:stackFromEnd="true"
-        app:layout_constraintTop_toBottomOf="@+id/message_connect"
-        app:layout_constraintBottom_toTopOf="@+id/messages_input"
-        android:visibility="gone"
-        tools:visibility="visible"/>
-
-    <EditText
-        android:id="@+id/messages_input"
+        android:id="@+id/connection_search"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:hint="Enter message to send"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/messages_send"
+        app:layout_constraintTop_toBottomOf="@+id/connection_user"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
+        app:layout_constraintEnd_toStartOf="@+id/connection_create"
+        android:text="SEARCH FOR DEVICES"/>
 
     <Button
-        android:id="@+id/messages_send"
-        android:layout_width="wrap_content"
+        android:id="@+id/connection_create"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/connection_user"
+        app:layout_constraintStart_toEndOf="@+id/connection_search"
         app:layout_constraintEnd_toEndOf="parent"
-        android:text="SEND"
-        android:visibility="gone"
-        tools:visibility="visible"/>
-
-
-
+        android:text="CREATE A ROOM"/>
 
 </android.support.constraint.ConstraintLayout>
