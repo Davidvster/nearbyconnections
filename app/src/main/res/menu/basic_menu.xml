@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/search_connections"
+        android:icon="@drawable/ic_youtube_searched_for_black_24dp"
+        android:title="Search for connections"
+        android:visible="true"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/advertise_connections"
+        android:icon="@drawable/ic_add_circle_outline_black_24dp"
+        android:title="Advertise"
+        android:visible="true"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/avaible_devices"
+        android:icon="@drawable/ic_apps_black_24dp"
+        android:title="List of avaible devices"
+        android:visible="true"
+        app:showAsAction="ifRoom" />
+
+</menu>
