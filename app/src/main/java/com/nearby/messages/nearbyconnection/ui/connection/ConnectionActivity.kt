@@ -44,6 +44,7 @@ class ConnectionActivity : BaseActivity<ConnectionMvp.Presenter>(), ConnectionMv
             ColorPickerDialog(this).init()
                     .setTitleText("Pick a color")
                     .setPositiveButton("Ok") { dialog ->
+                        cardColor = dialog.selectedColor
                         dialog.dismiss()
                     }
                     .setNegativeButton("Cancel") { dialog ->
