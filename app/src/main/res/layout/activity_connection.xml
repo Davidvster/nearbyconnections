@@ -1,33 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/messages_main">
+    android:background="@color/lobby_bg"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <EditText
-        android:id="@+id/connection_user"
+
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your username"/>
+        android:layout_margin="15dp"
+        android:layout_gravity="center">
 
-    <Button
-        android:id="@+id/connection_search"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/connection_user"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/connection_create"
-        android:text="SEARCH FOR DEVICES"/>
+        <EditText
+            android:id="@+id/connection_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLength="20"
+            android:hint="Enter your username"/>
 
-    <Button
-        android:id="@+id/connection_create"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/connection_user"
-        app:layout_constraintStart_toEndOf="@+id/connection_search"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="CREATE A ROOM"/>
+        <TextView
+            android:id="@+id/connection_error_user"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:textColor="@android:color/holo_red_dark"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/connection_user"
+            tools:text="Insert a correct name"/>
 
-</android.support.constraint.ConstraintLayout>
+        <TextView
+            android:id="@+id/connection_chat_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/connection_chat_search"
+            android:text="Chat-Room"/>
+
+        <Button
+            android:id="@+id/connection_chat_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/connection_user"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/connection_chat_create"
+            android:text="SEARCH FOR DEVICES"/>
+
+        <Button
+            android:id="@+id/connection_chat_create"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/connection_user"
+            app:layout_constraintStart_toEndOf="@+id/connection_chat_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="CREATE A ROOM"/>
+
+        <TextView
+            android:id="@+id/connection_quiz_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/connection_quiz_search"
+            android:text="Quizz-Room"/>
+
+        <Button
+            android:id="@+id/connection_quiz_search"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/connection_chat_create"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/connection_chat_create"
+            android:text="SEARCH FOR QUIZES"/>
+
+        <Button
+            android:id="@+id/connection_quiz_create"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/connection_chat_create"
+            app:layout_constraintStart_toEndOf="@+id/connection_chat_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="HOST A QUIZ"/>
+
+        <Button
+            android:id="@+id/select_color"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            app:layout_constraintTop_toBottomOf="@+id/connection_quiz_create"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="Pick your color"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+
+</FrameLayout>

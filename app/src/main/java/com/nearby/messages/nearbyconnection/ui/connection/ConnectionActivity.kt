@@ -1,41 +1,82 @@
 package com.nearby.messages.nearbyconnection.ui.connection
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
 import android.support.v4.content.ContextCompat
-import android.support.v7.widget.LinearLayoutManager
-import android.view.Menu
-import android.view.MenuItem
 import android.widget.Toast
 import com.nearby.messages.nearbyconnection.R
 import kotlinx.android.synthetic.main.activity_connection.*
-import android.content.DialogInterface
+import android.view.View
 import com.nearby.messages.nearbyconnection.ui.chat.ChatActivity
-import com.nearby.messages.nearbyconnection.ui.chat.ConnectionAdapter
 import com.nearby.messages.nearbyconnection.ui.host.HostActivity
+import com.flask.colorpicker.ColorPickerView
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder
+import com.nearby.messages.nearbyconnection.ui.views.ColorPickerDialog
+
 
 class ConnectionActivity : BaseActivity<ConnectionMvp.Presenter>(), ConnectionMvp.View {
 
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.ACCESS_COARSE_LOCATION)
     private val REQUEST_CODE_REQUIRED_PERMISSIONS = 1
+    private var cardColor = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter = ConnectionPresenter(this)
         setContentView(R.layout.activity_connection)
 
-        connection_search.setOnClickListener {
-            ChatActivity.start(this, connection_user.text.toString())
+        connection_chat_search.setOnClickListener {
+            if (checkInputName()) {
+                ChatActivity.start(this, connection_user.text.toString(), cardColor)
+            }
         }
 
-        connection_create.setOnClickListener {
-            HostActivity.start(this, connection_user.text.toString())
+        connection_chat_create.setOnClickListener {
+            if (checkInputName()) {
+                HostActivity.start(this, connection_user.text.toString(), cardColor)
+            }
         }
 
+        select_color.setOnClickListener {
+            ColorPickerDialog(this).init()
+                    .setTitleText("Pick a color")
+                    .setPositiveButton("Ok") { dialog ->
+                        dialog.dismiss()
+                    }
+                    .setNegativeButton("Cancel") { dialog ->
+                        dialog.dismiss()
+                    }
+                    .show()
+//            ColorPickerDialogBuilder
+//                    .with(this)
+//                    .setTitle("Choose color")
+//                    .initialColor(R.color.color_message_bg_guest)
+//                    .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+//                    .density(12)
+//                    .setOnColorSelectedListener { selectedColor -> Toast.makeText(this, "Selected color: " + Integer.toHexString(selectedColor), Toast.LENGTH_SHORT).show() }
+//                    .setPositiveButton("Ok") { dialog, selectedColor, allColors -> cardColor = selectedColor }
+//                    .setNegativeButton("Cancel") { dialog, which -> }
+//                    .build()
+//                    .show()
+        }
+
+    }
+
+    private fun checkInputName(): Boolean {
+        if (connection_user.text.toString().isNullOrEmpty() || connection_user.text.toString() == "") {
+            connection_error_user.text = "Please insert an username!"
+            connection_error_user.visibility = View.VISIBLE
+            return false
+        }
+        if (connection_user.text.toString().replace("/^\\s*/".toRegex(), "").isEmpty()) {
+            connection_error_user.text = "Please insert a valid username!"
+            connection_error_user.visibility = View.VISIBLE
+            return false
+        }
+        return true
     }
 
 

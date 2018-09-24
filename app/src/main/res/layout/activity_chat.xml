@@ -6,14 +6,55 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/messages_main">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/connection_content"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/chat_toolbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/chat_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            app:title="Connect to a ChatRoom"
+            android:minHeight="?android:attr/actionBarSize"
+            android:theme="@style/ToolbarTheme"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
+        android:id="@+id/connection_layout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/chat_bg"
+        app:layout_constraintTop_toBottomOf="@+id/chat_toolbar_layout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/connection_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <ProgressBar
+            android:id="@+id/connection_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
+    </FrameLayout>
 
     <android.support.constraint.ConstraintLayout
+        android:id="@+id/messages_chat_room_layout"
+        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:background="@color/chat_bg"
+        app:layout_constraintTop_toBottomOf="@+id/chat_toolbar_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:visibility="visible">
 
         <TextView
             android:id="@+id/messages_guest_name"
@@ -22,10 +63,8 @@
             android:textAlignment="center"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:background="@color/colorAccent"
-            android:visibility="gone"
-            tools:text="Example name"
-            tools:visibility="visible"/>
+            android:background="@color/color_accent"
+            tools:text="Example name"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/messages_content"
@@ -33,9 +72,7 @@
             android:layout_height="0dp"
             app:stackFromEnd="true"
             app:layout_constraintTop_toBottomOf="@+id/messages_guest_name"
-            app:layout_constraintBottom_toTopOf="@+id/messages_input"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+            app:layout_constraintBottom_toTopOf="@+id/messages_input"/>
 
         <EditText
             android:id="@+id/messages_input"
@@ -44,11 +81,9 @@
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:hint="Enter message to send"
-            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/messages_send"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:visibility="visible" />
+            app:layout_constraintStart_toStartOf="parent"/>
 
         <Button
             android:id="@+id/messages_send"
@@ -56,9 +91,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="SEND"
-            android:visibility="gone"
-            tools:visibility="visible"/>
+            android:text="SEND"/>
 
     </android.support.constraint.ConstraintLayout>
 

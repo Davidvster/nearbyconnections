@@ -1,9 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#90ff40</color>
+    <color name="color_primary">#388e3c</color>
+    <color name="color_primary_dark">#00600f</color>
+    <color name="color_accent">#ff9800</color>
+
     <color name="color_message_bg">#adf1ee</color>
     <color name="color_message_bg_guest">#bde491</color>
-    <color name="color_connection_bg">#7e7e7e</color>
+    <color name="color_connection_bg">#ffb74d</color>
+    <color name="lobby_bg">#a5d6a7</color>
+    <color name="chat_bg">#cfd8dc</color>
+
+    <color name="chat_color_1">#ff77a9</color>
+    <color name="chat_color_2">#b085f5</color>
+    <color name="chat_color_3">#80d6ff</color>
+    <color name="chat_color_4">#6ff9ff</color>
+    <color name="chat_color_5">#26a69a</color>
+    <color name="chat_color_6">#9ccc65</color>
+    <color name="chat_color_7">#ffff8b</color>
+    <color name="chat_color_8">#ffd95b</color>
+    <color name="chat_color_9">#ffa270</color>
+    <color name="chat_color_10">#ff867c</color>
+    <color name="chat_color_11">#be9c91</color>
+    <color name="chat_color_12">#a7c0cd</color>
 </resources>

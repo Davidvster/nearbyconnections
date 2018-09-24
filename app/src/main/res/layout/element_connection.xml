@@ -11,8 +11,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/connection_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="50dp"
         app:cardBackgroundColor="@color/color_connection_bg"
         android:layout_margin="5dp"
         app:cardCornerRadius="10dp"

@@ -5,12 +5,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import com.nearby.messages.nearbyconnection.R
+import kotlinx.android.synthetic.main.element_connection.view.*
 
 class ConnectionAdapter constructor(val context: Context) : RecyclerView.Adapter<ConnectionAdapter.ViewHolder>() {
 
-    var connectionList = mutableListOf<String>()
+    var connectionList = mutableListOf<Pair<String, String>>()
 
     var onRoomClicked: ((endpointId: String) -> Unit)? = null
 
@@ -19,10 +19,10 @@ class ConnectionAdapter constructor(val context: Context) : RecyclerView.Adapter
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        connectionList[holder.adapterPosition].let { endpointId ->
-            holder.itemView.findViewById<TextView>(R.id.connection_element_name).text = endpointId
-            holder.itemView.setOnClickListener {
-                onRoomClicked!!.invoke(endpointId)
+        connectionList[holder.adapterPosition].let { connection ->
+            holder.itemView.connection_element_name.text = connection.second
+            holder.itemView.connection_card.setOnClickListener {
+                onRoomClicked!!.invoke(connection.first)
             }
         }
     }

@@ -15,8 +15,10 @@ import com.google.android.gms.nearby.connection.Payload
 import com.google.android.gms.nearby.connection.PayloadCallback
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate
 import com.google.android.gms.nearby.connection.Strategy
+import com.google.gson.Gson
 import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
+import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 
 class HostPresenter constructor(hostView: HostMvp.View, private val context: Context = AppModule.application) : BasePresenter<HostMvp.View>(hostView), HostMvp.Presenter {
 
@@ -25,14 +27,19 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
     private var opponentEndpointId = mutableListOf<String>()
     private var guestNames = HashMap<String, String>()
     private var avaibleGuests = HashMap<String, String>()
-    private var messageList = mutableListOf<Pair<Pair<String, String>, Int>>()
+    private var messageList = mutableListOf<Pair<ChatMessage, Int>>()
 
-    private var ownerUsername = ""
+    private lateinit var packageName: String
+    private var username = ""
+    private var cardColor = -1
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             Log.v("SOGOVOREC", endpointId+" sent a message: "+ String(payload.asBytes()!!))
-            addMessage(Pair(Pair(String(payload.asBytes()!!), guestNames[endpointId]?:"unknown"), 2))
+
+            val chatMessage = Gson().fromJson(String(payload.asBytes()!!), ChatMessage::class.java)
+            addMessage(Pair(chatMessage, 2))
+            sendMessage(String(payload.asBytes()!!), endpointId)
         }
 
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
@@ -42,30 +49,30 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
         }
     }
 
-    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
-        override fun onEndpointFound(
-                endpointId: String, discoveredEndpointInfo: DiscoveredEndpointInfo) {
-            Log.v("SOGOVOREC", "An endpoint was found: " + endpointId)
-            avaibleGuests[endpointId] = "found"
-//            view?.updateConnectionList(avaibleGuests.values.toMutableList())
-//            view?.showAvaibleDevicesDialog(avaibleGuests)
-//            connectionsClient.requestConnection(ownerUsername, endpointId, connectionLifecycleCallback)
-            // An endpoint was found!
-        }
-
-        override fun onEndpointLost(endpointId: String) {
-            // A previously discovered endpoint has gone away.
-            avaibleGuests.remove(endpointId)
-            Log.v("SOGOVOREC", "A previously discovered endpoint has gone away. " + endpointId)
-        }
-    }
+//    private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
+//        override fun onEndpointFound(
+//                endpointId: String, discoveredEndpointInfo: DiscoveredEndpointInfo) {
+//            Log.v("SOGOVOREC", "An endpoint was found: " + endpointId)
+//            avaibleGuests[endpointId] = "found"
+////            view?.updateConnectionList(avaibleGuests.values.toMutableList())
+////            view?.showAvaibleDevicesDialog(avaibleGuests)
+////            connectionsClient.requestConnection(ownerUsername, endpointId, connectionLifecycleCallback)
+//            // An endpoint was found!
+//        }
+//
+//        override fun onEndpointLost(endpointId: String) {
+//            // A previously discovered endpoint has gone away.
+//            avaibleGuests.remove(endpointId)
+//            Log.v("SOGOVOREC", "A previously discovered endpoint has gone away. " + endpointId)
+//        }
+//    }
 
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
 
-        override fun onConnectionInitiated(
-                endpointId: String, connectionInfo: ConnectionInfo) {
-//            view?.showConnectionDialog(connectionInfo.endpointName, endpointId)
-            connectionsClient.acceptConnection(endpointId, payloadCallback)
+        override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
+            view?.showConnectionDialog(connectionInfo.endpointName, endpointId)
+//            guestNames[endpointId] = connectionInfo.endpointName
+//            connectionsClient.acceptConnection(endpointId, payloadCallback)
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
@@ -74,7 +81,7 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
                     avaibleGuests[endpointId] = "connected"
 //                    stopAdvertising()
                     opponentEndpointId.add(endpointId)
-//                    view?.setChattiningTitle(guestNames)
+                    view?.setChattiningTitle(guestNames)
                     Log.v("SOGOVOREC1", "We're connected! Can now start sending and receiving data. " + endpointId)
 //                    view?.setConnected()
                 }
@@ -85,7 +92,7 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
                     Log.v("SOGOVOREC2", "We're connected! Can now start sending and receiving data. " + endpointId)
                     if (opponentEndpointId.size < 1) {
 //                        view?.setDisconnected()
-                        stopAdvertising()
+//                        stopAdvertising()
                     }
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
@@ -95,7 +102,7 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
                     Log.v("SOGOVOREC3", "The connection broke before it was able to be accepted. " + endpointId)
                     if (opponentEndpointId.size < 1) {
 //                        view?.setDisconnected()
-                        stopAdvertising()
+//                        stopAdvertising()
                     }
                 }
             }// We're connected! Can now start sending and receiving data.
@@ -110,16 +117,19 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
             avaibleGuests[endpointId] = "disconnected"
             opponentEndpointId.remove(endpointId)
             guestNames.remove(endpointId)
-//            view?.setChattiningTitle(guestNames)
-            stopAdvertising()
+            view?.setChattiningTitle(guestNames)
+//            stopAdvertising()
             if (opponentEndpointId.size < 1) {
 //                view?.setDisconnected()
-                stopAdvertising()
+//                stopAdvertising()
             }
         }
     }
 
-    override fun init() {
+    override fun init(username: String, packageName: String, cardColor: Int) {
+        this.username = username
+        this.packageName = packageName
+        this.cardColor = cardColor
         connectionsClient = Nearby.getConnectionsClient(context)
     }
 
@@ -128,9 +138,8 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
     }
 
 
-    override fun startAdvertising(username: String, packageName: String) {
+    override fun startAdvertising() {
         Log.v("POVEZAVA", "started advertising")
-        ownerUsername = username
 //        connectionsClient.stopAdvertising()
         connectionsClient.startAdvertising(
                 username, packageName, connectionLifecycleCallback, AdvertisingOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build())
@@ -141,8 +150,28 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
         connectionsClient.stopAdvertising()
     }
 
-    override fun addMessage(message: Pair<Pair<String, String>, Int>) {
+    override fun addMessage(message: Pair<ChatMessage, Int>) {
         messageList.add(message)
         view?.setMessages(messageList)
+    }
+
+    override fun sendMessage(message: String, endpointId: String) {
+        for (guest in opponentEndpointId) {
+            if (guest != endpointId) {
+//                Log.v("POSILJAM", guestNames[guest])
+                connectionsClient.sendPayload(guest, Payload.fromBytes(message.toByteArray()))
+            }
+        }
+    }
+
+    override fun acceptConnection(user: String, endpointId: String) {
+        guestNames[endpointId] = user
+        // Automatically accept the connection on both sides.
+        connectionsClient.acceptConnection(endpointId, payloadCallback)
+
+    }
+
+    override fun rejectConnection(endpointId: String) {
+        connectionsClient.rejectConnection(endpointId)
     }
 }
