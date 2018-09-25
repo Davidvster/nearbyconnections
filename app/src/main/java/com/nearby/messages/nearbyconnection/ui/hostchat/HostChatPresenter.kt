@@ -1,4 +1,4 @@
-package com.nearby.messages.nearbyconnection.ui.host
+package com.nearby.messages.nearbyconnection.ui.hostchat
 
 import android.content.Context
 import android.util.Log
@@ -9,8 +9,6 @@ import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
 import com.google.android.gms.nearby.connection.ConnectionResolution
 import com.google.android.gms.nearby.connection.ConnectionsClient
 import com.google.android.gms.nearby.connection.ConnectionsStatusCodes
-import com.google.android.gms.nearby.connection.DiscoveredEndpointInfo
-import com.google.android.gms.nearby.connection.EndpointDiscoveryCallback
 import com.google.android.gms.nearby.connection.Payload
 import com.google.android.gms.nearby.connection.PayloadCallback
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate
@@ -19,12 +17,13 @@ import com.google.gson.Gson
 import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
+import com.nearby.messages.nearbyconnection.data.model.Participant
 
-class HostPresenter constructor(hostView: HostMvp.View, private val context: Context = AppModule.application) : BasePresenter<HostMvp.View>(hostView), HostMvp.Presenter {
+class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val context: Context = AppModule.application) : BasePresenter<HostChatMvp.View>(hostChatView), HostChatMvp.Presenter {
 
     private lateinit var connectionsClient: ConnectionsClient
 
-    private var opponentEndpointId = mutableListOf<String>()
+    private var guestsEndpointId = mutableListOf<String>()
     private var guestNames = HashMap<String, String>()
     private var avaibleGuests = HashMap<String, String>()
     private var messageList = mutableListOf<Pair<ChatMessage, Int>>()
@@ -80,9 +79,12 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
                 ConnectionsStatusCodes.STATUS_OK -> {
                     avaibleGuests[endpointId] = "connected"
 //                    stopAdvertising()
-                    opponentEndpointId.add(endpointId)
-                    view?.setChattiningTitle(guestNames)
+                    guestsEndpointId.add(endpointId)
+                    view?.setChattingTitle(guestNames.values.toList())
                     Log.v("SOGOVOREC1", "We're connected! Can now start sending and receiving data. " + endpointId)
+//                    val guests = Participant(guestNames.values.toList())
+//                    sendMessage(Gson().toJson(guests))
+                    sendParticipants(guestNames)
 //                    view?.setConnected()
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
@@ -90,7 +92,7 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
 //                    stopAdvertising()
                     guestNames.remove(endpointId)
                     Log.v("SOGOVOREC2", "We're connected! Can now start sending and receiving data. " + endpointId)
-                    if (opponentEndpointId.size < 1) {
+                    if (guestsEndpointId.size < 1) {
 //                        view?.setDisconnected()
 //                        stopAdvertising()
                     }
@@ -100,7 +102,7 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
                     guestNames.remove(endpointId)
 //                    stopAdvertising()
                     Log.v("SOGOVOREC3", "The connection broke before it was able to be accepted. " + endpointId)
-                    if (opponentEndpointId.size < 1) {
+                    if (guestsEndpointId.size < 1) {
 //                        view?.setDisconnected()
 //                        stopAdvertising()
                     }
@@ -115,11 +117,11 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
             // sent or received.
             Log.v("SOGOVOREC", "We've been disconnected from this endpoint. " + endpointId)
             avaibleGuests[endpointId] = "disconnected"
-            opponentEndpointId.remove(endpointId)
+            guestsEndpointId.remove(endpointId)
             guestNames.remove(endpointId)
-            view?.setChattiningTitle(guestNames)
+            view?.setChattingTitle(guestNames.values.toList())
 //            stopAdvertising()
-            if (opponentEndpointId.size < 1) {
+            if (guestsEndpointId.size < 1) {
 //                view?.setDisconnected()
 //                stopAdvertising()
             }
@@ -156,11 +158,21 @@ class HostPresenter constructor(hostView: HostMvp.View, private val context: Con
     }
 
     override fun sendMessage(message: String, endpointId: String) {
-        for (guest in opponentEndpointId) {
+        for (guest in guestsEndpointId) {
             if (guest != endpointId) {
 //                Log.v("POSILJAM", guestNames[guest])
                 connectionsClient.sendPayload(guest, Payload.fromBytes(message.toByteArray()))
             }
+        }
+    }
+
+    private fun sendParticipants(guestNames: HashMap<String, String>) {
+        for (guest in guestsEndpointId) {
+            val tmpGuestNames = guestNames.clone() as HashMap<String, String>
+            tmpGuestNames.remove(guest)
+            tmpGuestNames["username"] = username
+            val message = Gson().toJson(Participant(tmpGuestNames.values.toList()))
+            connectionsClient.sendPayload(guest, Payload.fromBytes(message.toByteArray()))
         }
     }
 

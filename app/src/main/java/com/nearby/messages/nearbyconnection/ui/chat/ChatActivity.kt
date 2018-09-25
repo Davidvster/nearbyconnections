@@ -28,7 +28,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         title = "Connect to a Chat Room"
         setSupportActionBar(chat_toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp)
+        supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
 
         username = intent.getStringExtra(ARG_MY_USER_NAME)
         cardColor = intent.getIntExtra(ARG_CARD_BACKGROUND_COLOR, -1)
@@ -104,25 +104,30 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
 
     override fun updateConnectionList(availableRooms: MutableList<Pair<String, String>>) {
         connectionAdapter.connectionList = availableRooms
-        connectionAdapter.notifyDataSetChanged()
+        connectionAdapter.notifyItemInserted(availableRooms.size-1)
 //        connection_content.scrollToPosition(availableRooms.size - 1)
     }
 
-    override fun setChattiningTitle(guestNames: HashMap<String, String>) {
+    override fun setChattingTitle(guestNames: List<String>) {
         messages_guest_name.text = "Chatting with: " + guestNames
     }
 
     override fun setMessages(messageList: List<Pair<ChatMessage, Int>>) {
         chatAdapter.messagesList = messageList.toMutableList()
-        chatAdapter.notifyDataSetChanged()
+        chatAdapter.notifyItemInserted(messageList.size-1)
         messages_input.text = null
         messages_content.scrollToPosition(messageList.size - 1)
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
-        presenter.stopAllConnections()
-        this.finish()
+        if (presenter.isConnected()) {
+            presenter.stopAllConnections()
+            setConnectionRoom()
+            presenter.startDiscovery()
+        } else {
+            this.finish()
+        }
     }
 
     override fun onDestroy() {

@@ -1,12 +1,12 @@
-package com.nearby.messages.nearbyconnection.ui.host
+package com.nearby.messages.nearbyconnection.ui.hostchat
 
 import com.nearby.messages.nearbyconnection.arch.BaseMvp
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 
-interface HostMvp : BaseMvp {
+interface HostChatMvp : BaseMvp {
     interface View : BaseMvp.View {
         fun setMessages(messageList: List<Pair<ChatMessage, Int>>)
-        fun setChattiningTitle(guestNames: HashMap<String, String>)
+        fun setChattingTitle(guestNames: List<String>)
         fun showConnectionDialog(user: String, endpointId: String)
     }
 

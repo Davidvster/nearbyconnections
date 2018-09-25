@@ -15,7 +15,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.NearbyCommunication" >
-        <activity android:name=".ui.connection.ConnectionActivity"
+        <activity android:name=".ui.lobby.LobbyActivity"
             android:theme="@style/AppTheme.NoActionBar.LightStatusBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,7 +23,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.host.HostActivity"
+        <activity android:name=".ui.hostchat.HostChatActivity"
             android:theme="@style/AppTheme.NoActionBar.DarkStatusBar"/>
         <activity android:name=".ui.chat.ChatActivity"
             android:theme="@style/AppTheme.NoActionBar.DarkStatusBar"/>

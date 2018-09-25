@@ -19,6 +19,7 @@ import com.google.gson.Gson
 import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
+import com.nearby.messages.nearbyconnection.data.model.Participant
 import java.util.Date
 
 class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Context = AppModule.application) : BasePresenter<ChatMvp.View>(chatView), ChatMvp.Presenter {
@@ -41,7 +42,40 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             Log.v("SOGOVOREC", endpointId+" sent a message: "+ String(payload.asBytes()!!))
             val chatMessage = Gson().fromJson(String(payload.asBytes()!!), ChatMessage::class.java)
-            addMessage(Pair(chatMessage, 2))
+            if (chatMessage.user != null && chatMessage.date != null && chatMessage.message != null && chatMessage.color != null) {
+                addMessage(Pair(chatMessage, 2))
+            } else {
+                val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
+                if (guests.participants != null) {
+                    view?.setChattingTitle(guests.participants)
+                }
+            }
+
+//            try {
+//                val chatMessage = Gson().fromJson(String(payload.asBytes()!!), ChatMessage::class.java)
+//                if (chatMessage.user != null && chatMessage.date != null && chatMessage.message != null && chatMessage.color != null) {
+//                    addMessage(Pair(chatMessage, 2))
+//                } else {
+//                    try {
+//                        val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
+//                        if (guests.participants != null) {
+//                            view?.setChattingTitle(guests.participants)
+//                        }
+//                    }
+//                    catch (e: Exception) {
+//                    }
+//                }
+//            }
+//            catch (e: Exception) {
+//                try {
+//                    val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
+//                    if (guests.participants != null) {
+//                        view?.setChattingTitle(guests.participants)
+//                    }
+//                }
+//                catch (e: Exception) {
+//                }
+//            }
         }
 
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {

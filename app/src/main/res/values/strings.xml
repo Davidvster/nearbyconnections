@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">NearbyConnection</string>
+    <string name="color_cancel">Cancel</string>
+    <string name="color_confirm">Ok</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.nearby.messages.nearbyconnection.ui.host
+package com.nearby.messages.nearbyconnection.ui.hostchat
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -12,10 +12,10 @@ import com.google.gson.Gson
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.ui.chat.ChatAdapter
-import kotlinx.android.synthetic.main.activity_host.*
+import kotlinx.android.synthetic.main.activity_host_chat.*
 import java.util.Date
 
-class HostActivity : BaseActivity<HostMvp.Presenter>(), HostMvp.View {
+class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View {
 
     private lateinit var chatAdapter: ChatAdapter
     lateinit var username: String
@@ -23,12 +23,12 @@ class HostActivity : BaseActivity<HostMvp.Presenter>(), HostMvp.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        presenter = HostPresenter(this)
-        setContentView(R.layout.activity_host)
+        presenter = HostChatPresenter(this)
+        setContentView(R.layout.activity_host_chat)
 
         setSupportActionBar(host_chat_toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
-        supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_arrow_back_black_24dp)
+        supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
 
         username = intent.getStringExtra(ARG_MY_USER_NAME)
         cardColor = intent.getIntExtra(ARG_CARD_BACKGROUND_COLOR, -1)
@@ -59,7 +59,7 @@ class HostActivity : BaseActivity<HostMvp.Presenter>(), HostMvp.View {
         return false
     }
 
-    override fun setChattiningTitle(guestNames: HashMap<String, String>) {
+    override fun setChattingTitle(guestNames: List<String>) {
         messages_guest_name.text = "Chatting with: " + guestNames
     }
 
@@ -89,7 +89,7 @@ class HostActivity : BaseActivity<HostMvp.Presenter>(), HostMvp.View {
 
     override fun setMessages(messageList: List<Pair<ChatMessage, Int>>) {
         chatAdapter.messagesList = messageList.toMutableList()
-        chatAdapter.notifyDataSetChanged()
+        chatAdapter.notifyItemInserted(messageList.size-1)
         messages_input.text = null
         messages_content.scrollToPosition(messageList.size - 1)
     }
@@ -105,7 +105,7 @@ class HostActivity : BaseActivity<HostMvp.Presenter>(), HostMvp.View {
 
         @JvmStatic
         fun start(context: Activity, username: String, cardColor: Int) {
-            val intent = Intent(context, HostActivity::class.java)
+            val intent = Intent(context, HostChatActivity::class.java)
             intent.putExtra(ARG_MY_USER_NAME, username)
             intent.putExtra(ARG_CARD_BACKGROUND_COLOR, cardColor)
             context.startActivity(intent)

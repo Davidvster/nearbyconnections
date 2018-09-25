@@ -1,9 +1,8 @@
-package com.nearby.messages.nearbyconnection.ui.connection
+package com.nearby.messages.nearbyconnection.ui.lobby
 
-import android.content.Context
 import com.nearby.messages.nearbyconnection.arch.BaseMvp
 
-interface ConnectionMvp : BaseMvp {
+interface LobbyMvp : BaseMvp {
     interface View : BaseMvp.View {
 //        fun showAvaibleDevicesDialog(avaibleGuests: HashMap<String, String>)
 //        fun updateConnectionList(availableRooms: MutableList<String>)
