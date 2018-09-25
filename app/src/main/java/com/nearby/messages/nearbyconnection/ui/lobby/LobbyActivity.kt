@@ -17,6 +17,8 @@ import com.nearby.messages.nearbyconnection.ui.hostquiz.HostQuizActivity
 import com.nearby.messages.nearbyconnection.ui.quiz.QuizActivity
 import com.nearby.messages.nearbyconnection.ui.views.ColorPickDialog
 import android.content.DialogInterface
+import android.content.res.ColorStateList
+import android.graphics.Color
 import com.nearby.messages.nearbyconnection.ui.views.CustomFlag
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
@@ -27,11 +29,19 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.ACCESS_COARSE_LOCATION)
     private val REQUEST_CODE_REQUIRED_PERMISSIONS = 1
     private var cardColor = 0
+    private var defaultEditColor = -1
+    private var accentEditColor = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         presenter = LobbyPresenter(this)
         setContentView(R.layout.activity_lobby)
+
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            defaultEditColor = Color.GRAY
+            accentEditColor = ContextCompat.getColor(this, R.color.color_accent)
+            lobby_user_name.backgroundTintList = ColorStateList.valueOf( defaultEditColor )
+        }
 
         cardColor = ContextCompat.getColor(this, R.color.chat_color_1)
         lobby_chat_join.setOnClickListener {
@@ -55,6 +65,27 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
         lobby_quiz_host.setOnClickListener {
             if (checkInputName()) {
                 HostQuizActivity.start(this, lobby_user_name.text.toString(), cardColor)
+            }
+        }
+
+        lobby_user_name.setOnClickListener {
+            lobby_user_name_error.visibility = View.GONE
+            if (android.os.Build.VERSION.SDK_INT >= 21) {
+                if (it.isFocused) {
+                    lobby_user_name.backgroundTintList = ColorStateList.valueOf( accentEditColor )
+                } else {
+                    lobby_user_name.backgroundTintList = ColorStateList.valueOf( defaultEditColor )
+                }
+            }
+        }
+
+        lobby_user_name.setOnFocusChangeListener {_, focused ->
+            if (android.os.Build.VERSION.SDK_INT >= 21) {
+                if (focused) {
+                    lobby_user_name.backgroundTintList = ColorStateList.valueOf( accentEditColor )
+                } else {
+                    lobby_user_name.backgroundTintList = ColorStateList.valueOf( defaultEditColor )
+                }
             }
         }
 
@@ -85,6 +116,9 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
         if (lobby_user_name.text.toString().isNullOrEmpty() || lobby_user_name.text.toString() == "") {
             lobby_user_name_error.text = "Please insert an username!"
             lobby_user_name_error.visibility = View.VISIBLE
+            if (android.os.Build.VERSION.SDK_INT >= 21) {
+                lobby_user_name.backgroundTintList = ColorStateList.valueOf( Color.RED )
+            }
             return false
         }
         if (lobby_user_name.text.toString().replace("/^\\s*/".toRegex(), "").isEmpty()) {
@@ -97,7 +131,6 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
 
     override fun onStart() {
         super.onStart()
-
         if (!hasPermissions(this, *REQUIRED_PERMISSIONS)) {
             requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS)
         }

@@ -47,7 +47,7 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
             } else {
                 val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
                 if (guests.participants != null) {
-                    view?.setChattingTitle(guests.participants)
+                    view?.setParitipantsList(guests.participants)
                 }
             }
 
@@ -177,7 +177,7 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
     override fun init(username: String, packageName: String, colorCard: Int) {
         this.username = username
-        this.packageName = packageName
+        this.packageName = packageName +".chat"
         this.cardColor = colorCard
         connectionsClient = Nearby.getConnectionsClient(context)
     }
@@ -211,6 +211,7 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
     }
 
     override fun stopAllConnections() {
+        connected = false
         connectionsClient.stopAllEndpoints()
     }
 

@@ -27,5 +27,9 @@
             android:theme="@style/AppTheme.NoActionBar.DarkStatusBar"/>
         <activity android:name=".ui.chat.ChatActivity"
             android:theme="@style/AppTheme.NoActionBar.DarkStatusBar"/>
+        <activity android:name=".ui.hostquiz.HostQuizActivity"
+            android:theme="@style/AppTheme.NoActionBar.DarkStatusBar"/>
+        <activity android:name=".ui.quiz.QuizActivity"
+            android:theme="@style/AppTheme.NoActionBar.DarkStatusBar"/>
     </application>
 </manifest>

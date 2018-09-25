@@ -37,52 +37,37 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         presenter.startAdvertising()
 
         chatAdapter = ChatAdapter(this)
-        messages_content.layoutManager = LinearLayoutManager(this)
-        messages_content.adapter = chatAdapter
+        chat_content.layoutManager = LinearLayoutManager(this)
+        chat_content.adapter = chatAdapter
 
-        messages_send.setOnClickListener {
-            if (!messages_input.text.toString().isNullOrEmpty() && messages_input.text.toString() != "") {
-                val chatMessage = ChatMessage(username, messages_input.text.toString(), Date().toString(), cardColor)
+        chat_send.setOnClickListener {
+            if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "") {
+                val chatMessage = ChatMessage(username, chat_input.text.toString(), Date().toString(), cardColor)
                 presenter.sendMessage(Gson().toJson(chatMessage))
                 presenter.addMessage(Pair(chatMessage, 1))
             }
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                    this.finish()
-                return true
-            }
-        }
-        return false
-    }
-
-    override fun setChattingTitle(guestNames: List<String>) {
-        messages_guest_name.text = "Chatting with: " + guestNames
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        presenter.stopAllConnections()
-        this.finish()
+    override fun setParticipantsTitle(guestNames: List<String>) {
+        chat_guest_name.text = "Chatting with: " + guestNames
     }
 
     override fun showConnectionDialog(user: String, endpointId: String) {
         val builder = AlertDialog.Builder(this)
 
-        messages_guest_name.visibility = View.VISIBLE
+        chat_guest_name.visibility = View.VISIBLE
 
         builder.setTitle("Connection found")
         builder.setMessage(user+ " wants to connect to you!")
         builder.setPositiveButton("Accept") { dialog, which ->
-            messages_guest_name.visibility = View.VISIBLE
+            chat_guest_name.visibility = View.VISIBLE
             presenter.acceptConnection(user, endpointId)
         }
         builder.setNegativeButton("Reject") { dialog, which ->
             presenter.rejectConnection(endpointId)
         }
+        builder.setOnDismissListener { presenter.rejectConnection(endpointId) }
         val dialog = builder.create()
         dialog.show()
     }
@@ -90,12 +75,28 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
     override fun setMessages(messageList: List<Pair<ChatMessage, Int>>) {
         chatAdapter.messagesList = messageList.toMutableList()
         chatAdapter.notifyItemInserted(messageList.size-1)
-        messages_input.text = null
-        messages_content.scrollToPosition(messageList.size - 1)
+        chat_input.text = null
+        chat_content.scrollToPosition(messageList.size - 1)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                this.finish()
+                return true
+            }
+        }
+        return false
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        this.finish()
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        presenter.stopAdvertising()
         presenter.stopAllConnections()
     }
 

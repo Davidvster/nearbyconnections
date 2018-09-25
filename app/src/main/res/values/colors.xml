@@ -22,4 +22,10 @@
     <color name="chat_color_10">#ff867c</color>
     <color name="chat_color_11">#be9c91</color>
     <color name="chat_color_12">#ff77a9</color>
+
+    <color name="answer_a">#42a5f5</color>
+    <color name="answer_b">#26a69a</color>
+    <color name="answer_c">#9ccc65</color>
+    <color name="answer_d">#ffee58</color>
+
 </resources>

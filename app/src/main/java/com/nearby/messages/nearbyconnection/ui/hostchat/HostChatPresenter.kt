@@ -80,7 +80,7 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
                     avaibleGuests[endpointId] = "connected"
 //                    stopAdvertising()
                     guestsEndpointId.add(endpointId)
-                    view?.setChattingTitle(guestNames.values.toList())
+                    view?.setParticipantsTitle(guestNames.values.toList())
                     Log.v("SOGOVOREC1", "We're connected! Can now start sending and receiving data. " + endpointId)
 //                    val guests = Participant(guestNames.values.toList())
 //                    sendMessage(Gson().toJson(guests))
@@ -119,7 +119,7 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
             avaibleGuests[endpointId] = "disconnected"
             guestsEndpointId.remove(endpointId)
             guestNames.remove(endpointId)
-            view?.setChattingTitle(guestNames.values.toList())
+            view?.setParticipantsTitle(guestNames.values.toList())
 //            stopAdvertising()
             if (guestsEndpointId.size < 1) {
 //                view?.setDisconnected()
@@ -130,7 +130,7 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
 
     override fun init(username: String, packageName: String, cardColor: Int) {
         this.username = username
-        this.packageName = packageName
+        this.packageName = packageName + ".chat"
         this.cardColor = cardColor
         connectionsClient = Nearby.getConnectionsClient(context)
     }

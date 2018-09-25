@@ -41,8 +41,8 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         connection_content.adapter = connectionAdapter
 
         chatAdapter = ChatAdapter(this)
-        messages_content.layoutManager = LinearLayoutManager(this)
-        messages_content.adapter = chatAdapter
+        chat_content.layoutManager = LinearLayoutManager(this)
+        chat_content.adapter = chatAdapter
 
         connectionAdapter.onRoomClicked =  {
 //            presenter.stopDiscovery()
@@ -51,29 +51,13 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
 //            ChatActivity.start(this, connection_user.text.toString())
         }
 
-        messages_send.setOnClickListener {
-            if (!messages_input.text.toString().isNullOrEmpty() && messages_input.text.toString() != "") {
-                presenter.sendMessage(messages_input.text.toString())
-                val chatMessage = ChatMessage(username, messages_input.text.toString(), Date().toString(), cardColor)
+        chat_send.setOnClickListener {
+            if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "") {
+                presenter.sendMessage(chat_input.text.toString())
+                val chatMessage = ChatMessage(username, chat_input.text.toString(), Date().toString(), cardColor)
                 presenter.addMessage(Pair(chatMessage, 1))
             }
         }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            android.R.id.home -> {
-                if (presenter.isConnected()) {
-                    presenter.stopAllConnections()
-                    setConnectionRoom()
-                    presenter.startDiscovery()
-                } else {
-                    this.finish()
-                }
-                return true
-            }
-        }
-        return false
     }
 
     override fun setToolbarTitle(newTitle: String) {
@@ -81,16 +65,18 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
     }
 
     override fun setChatRoom() {
-        messages_chat_room_layout.visibility = View.VISIBLE
+        chat_room_layout.visibility = View.VISIBLE
         connection_layout.visibility = View.GONE
         connectionAdapter.connectionList = mutableListOf()
     }
 
     override fun setConnectionRoom() {
-        messages_chat_room_layout.visibility = View.GONE
+        setProgressVisible(false)
+        chat_room_layout.visibility = View.GONE
         connection_layout.visibility = View.VISIBLE
         chatAdapter.messagesList = mutableListOf()
         supportActionBar!!.title = "Connect to a Chat Room"
+        presenter.startDiscovery()
 
     }
 
@@ -108,23 +94,39 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
 //        connection_content.scrollToPosition(availableRooms.size - 1)
     }
 
-    override fun setChattingTitle(guestNames: List<String>) {
-        messages_guest_name.text = "Chatting with: " + guestNames
+    override fun setParitipantsList(guestNames: List<String>) {
+        chat_guest_name.text = "Chatting with: " + guestNames
     }
 
     override fun setMessages(messageList: List<Pair<ChatMessage, Int>>) {
         chatAdapter.messagesList = messageList.toMutableList()
         chatAdapter.notifyItemInserted(messageList.size-1)
-        messages_input.text = null
-        messages_content.scrollToPosition(messageList.size - 1)
+        chat_input.text = null
+        chat_content.scrollToPosition(messageList.size - 1)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> {
+                if (presenter.isConnected()) {
+                    presenter.stopDiscovery()
+                    presenter.stopAllConnections()
+                    setConnectionRoom()
+                } else {
+                    this.finish()
+                }
+                return true
+            }
+        }
+        return false
     }
 
     override fun onBackPressed() {
         super.onBackPressed()
         if (presenter.isConnected()) {
+            presenter.stopDiscovery()
             presenter.stopAllConnections()
             setConnectionRoom()
-            presenter.startDiscovery()
         } else {
             this.finish()
         }
@@ -132,6 +134,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
 
     override fun onDestroy() {
         super.onDestroy()
+        presenter.stopDiscovery()
         presenter.stopAllConnections()
     }
 
