@@ -15,7 +15,6 @@ import com.nearby.messages.nearbyconnection.ui.chat.ChatActivity
 import com.nearby.messages.nearbyconnection.ui.hostchat.HostChatActivity
 import com.nearby.messages.nearbyconnection.ui.hostquiz.HostQuizActivity
 import com.nearby.messages.nearbyconnection.ui.quiz.QuizActivity
-import com.nearby.messages.nearbyconnection.ui.views.ColorPickDialog
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
@@ -70,6 +69,7 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
 
         lobby_user_name.setOnClickListener {
             lobby_user_name_error.visibility = View.GONE
+            lobby_layout.visibility = View.VISIBLE
             if (android.os.Build.VERSION.SDK_INT >= 21) {
                 if (it.isFocused) {
                     lobby_user_name.backgroundTintList = ColorStateList.valueOf( accentEditColor )
@@ -95,20 +95,7 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
             builder.setFlagView(CustomFlag(this, R.layout.dialog_layout_flag))
             builder.setPositiveButton(getString(R.string.color_confirm), ColorEnvelopeListener { envelope, fromUser -> cardColor = envelope.color })
             builder.setNegativeButton(getString(R.string.color_cancel), DialogInterface.OnClickListener { dialogInterface, i -> dialogInterface.dismiss() })
-//            builder.attachAlphaSlideBar() // attach AlphaSlideBar
-//            builder.attachBrightnessSlideBar() // attach BrightnessSlideBar
-            builder.show() // show dialog
-//            ColorPickDialog(this).init()
-//                    .setTitleText("Pick a color")
-//                    .setSelectedColor(cardColor)
-//                    .setPositiveButton("Ok") { dialog ->
-//                        cardColor = dialog.selectedColor
-//                        dialog.dismiss()
-//                    }
-//                    .setNegativeButton("Cancel") { dialog ->
-//                        dialog.dismiss()
-//                    }
-//                    .show()
+            builder.show()
         }
     }
 

@@ -1,102 +1,137 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lobby_bg"
+    android:animateLayoutChanges="true"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-
-    <android.support.constraint.ConstraintLayout
+    <ImageView
+        android:id="@+id/lobby_logo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:src="@drawable/ic_launcher_background"
+        android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/lobby_user_name"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/lobby_user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter your nickname"
+        android:gravity="center"
+        android:maxLength="20"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/lobby_logo"
+        app:layout_constraintBottom_toTopOf="@+id/lobby_layout"
+        app:layout_constraintVertical_chainStyle="packed"/>
+
+    <TextView
+        android:id="@+id/lobby_user_name_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:gravity="center"
+        android:textColor="@android:color/holo_red_dark"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/lobby_user_name"
+        tools:text="Insert a correct name" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/lobby_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_margin="15dp"
-        android:layout_gravity="center">
+        android:layout_marginBottom="8dp"
+        android:animateLayoutChanges="true"
+        android:visibility="gone"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lobby_user_name"
+        tools:visibility="visible">
 
-        <android.support.v7.widget.AppCompatEditText
-            android:id="@+id/lobby_user_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLength="20"
-            android:hint="Enter your username"/>
-
-        <TextView
-            android:id="@+id/lobby_user_name_error"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:textColor="@android:color/holo_red_dark"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/lobby_user_name"
-            tools:text="Insert a correct name"/>
 
         <TextView
             android:id="@+id/lobby_chat_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/lobby_chat_join"
-            android:text="Chat-Room"/>
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="Chat-Room"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/lobby_chat_join"
+            style="@style/LobbyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            app:layout_constraintTop_toBottomOf="@+id/lobby_user_name"
-            app:layout_constraintStart_toStartOf="parent"
+            android:text="Join a chat room"
             app:layout_constraintEnd_toStartOf="@+id/lobby_chat_host"
-            android:text="JOIN A CHAT ROOM"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lobby_chat_title" />
 
         <Button
             android:id="@+id/lobby_chat_host"
+            style="@style/LobbyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
-            app:layout_constraintTop_toBottomOf="@+id/lobby_user_name"
-            app:layout_constraintStart_toEndOf="@+id/lobby_chat_join"
+            android:text="Host a chat room"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="CREATE A CHAT ROOM"/>
+            app:layout_constraintStart_toEndOf="@+id/lobby_chat_join"
+            app:layout_constraintTop_toBottomOf="@+id/lobby_chat_title" />
 
         <TextView
             android:id="@+id/lobby_quiz_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/lobby_quiz_join"
-            android:text="Quizz-Room"/>
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="Quizz-Room"
+            app:layout_constraintTop_toBottomOf="@+id/lobby_chat_join" />
 
         <Button
             android:id="@+id/lobby_quiz_join"
+            style="@style/LobbyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:layout_constraintTop_toBottomOf="@+id/lobby_chat_host"
-            app:layout_constraintStart_toStartOf="parent"
+            android:text="Join a quiz room"
             app:layout_constraintEnd_toStartOf="@+id/lobby_chat_host"
-            android:text="JOIN A QUIZ ROOm"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/lobby_quiz_title" />
 
         <Button
             android:id="@+id/lobby_quiz_host"
+            style="@style/LobbyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:layout_constraintTop_toBottomOf="@+id/lobby_chat_host"
-            app:layout_constraintStart_toEndOf="@+id/lobby_chat_join"
+            android:text="Host a quiz room"
             app:layout_constraintEnd_toEndOf="parent"
-            android:text="HOST A QUIZ"/>
+            app:layout_constraintStart_toEndOf="@+id/lobby_chat_join"
+            app:layout_constraintTop_toBottomOf="@+id/lobby_quiz_title" />
 
         <Button
             android:id="@+id/lobby_color_select"
+            style="@style/ColorButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            app:layout_constraintTop_toBottomOf="@+id/lobby_quiz_host"
+            android:layout_marginTop="40dp"
+            android:text="Pick your color"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:text="Pick your color"/>
+            app:layout_constraintTop_toBottomOf="@+id/lobby_quiz_host" />
 
     </android.support.constraint.ConstraintLayout>
 
 
-</FrameLayout>
+
+
+</android.support.constraint.ConstraintLayout>

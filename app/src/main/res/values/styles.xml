@@ -18,21 +18,38 @@
     <style name="ToolbarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
         <item name="android:textStyle">bold</item>
         <item name="android:lineSpacingExtra">8sp</item>
-        <item name="android:textColorPrimary">@android:color/white</item>
-        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="android:textColorPrimary">@color/color_white</item>
+        <item name="android:textColorSecondary">@color/color_white</item>
         <item name="android:actionMenuTextColor">@color/color_accent</item>
     </style>
 
-    <style name="AppTheme.NoActionBar.LightStatusBar" parent="AppTheme.NoActionBar">
+    <style name="DialogTitle" parent="TextAppearance.AppCompat">
+        <item name="android:textStyle">bold</item>
+        <item name="android:lineSpacingExtra">8sp</item>
+        <item name="android:textColor">@color/color_white</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar.TransparentStatusBar" parent="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="colorPrimaryDark">@color/lobby_bg</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 
     <style name="AppTheme.NoActionBar.DarkStatusBar" parent="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="colorPrimaryDark">@color/color_primary</item>
+    </style>
+
+    <style name="LobbyButton" parent="Base.TextAppearance.AppCompat.Button">
+        <item name="android:backgroundTint">@color/color_accent</item>
+        <item name="android:textColor">@color/color_white</item>
+    </style>
+
+    <style name="ColorButton" parent="LobbyButton">
+        <item name="android:backgroundTint">@color/color_primary</item>
     </style>
 
 </resources>

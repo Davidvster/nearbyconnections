@@ -4,13 +4,22 @@
     <color name="color_primary_dark">#00600f</color>
     <color name="color_accent">#ff9800</color>
 
-    <color name="color_message_input_bg">@color/lobby_bg</color>
+    <!--<color name="color_primary">#0CAAE8</color>-->
+    <!--<color name="color_primary_dark">#0D7BFF</color>-->
+    <!--<color name="color_accent">#0CE8AE</color>-->
+
+    <color name="color_transparent">#00ffffff</color>
+    <color name="color_message_input_bg">#96fae079</color>
+    <!--<color name="color_message_input_bg">#00FAFF</color>-->
     <color name="color_message_bg">#adf1ee</color>
     <color name="color_message_bg_guest">#bde491</color>
     <color name="color_connection_bg">#ffb74d</color>
-    <color name="lobby_bg">#a5d6a7</color>
+    <color name="lobby_bg">#abd6a5</color>
+    <!--<color name="lobby_bg">#0DFF7B</color>-->
     <color name="chat_bg">#cfd8dc</color>
     <color name="progress_bg">#78000000</color>
+
+    <color name="color_white">#ffff</color>
 
     <color name="chat_color_1">#a7c0cd</color>
     <color name="chat_color_2">#b085f5</color>

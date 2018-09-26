@@ -11,7 +11,6 @@ interface QuizMvp : BaseMvp {
         fun setToolbarTitle(newTitle: String)
         fun setProgressVisible(visible: Boolean)
         fun updateConnectionList(availableRooms: MutableList<Pair<String, String>>)
-        fun setParticipantsList(guestNames: List<String>)
         fun setQuestion(question: QuizQuestion)
         fun updateQuizResult(resultList: MutableList<QuizResult>)
     }
@@ -26,5 +25,7 @@ interface QuizMvp : BaseMvp {
         fun stopDiscovery()
         fun init(username: String, packageName: String, colorCard: Int)
         fun sendAnswer(response: Int)
+        fun getGuestList(): List<String>
+        fun getHostUsername(): String
     }
 }

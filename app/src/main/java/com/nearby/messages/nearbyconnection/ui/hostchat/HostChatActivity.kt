@@ -6,12 +6,14 @@ import android.content.Intent
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.google.gson.Gson
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.ui.chat.ChatAdapter
+import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_host_chat.*
 import java.util.Date
 
@@ -49,19 +51,11 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         }
     }
 
-    override fun setParticipantsTitle(guestNames: List<String>) {
-        chat_guest_name.text = "Chatting with: " + guestNames
-    }
-
     override fun showConnectionDialog(user: String, endpointId: String) {
         val builder = AlertDialog.Builder(this)
-
-        chat_guest_name.visibility = View.VISIBLE
-
         builder.setTitle("Connection found")
         builder.setMessage(user + " wants to connect to you!")
         builder.setPositiveButton("Accept") { dialog, which ->
-            chat_guest_name.visibility = View.VISIBLE
             presenter.acceptConnection(user, endpointId)
         }
         builder.setNegativeButton("Reject") { dialog, which ->
@@ -79,11 +73,26 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         chat_content.scrollToPosition(messageList.size - 1)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_guests, menu)
+        return true
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> {
                 this.finish()
                 return true
+            }
+            R.id.guests_list -> {
+                if (presenter.getGuestList().isNotEmpty()) {
+                    GuestListDialog(this).init(presenter.getGuestList())
+                            .setPositiveButton { dialog ->
+                                dialog.dismiss()
+                            }
+                            .setTitleText("Hosting a Chat-Room")
+                            .show()
+                }
             }
         }
         return false

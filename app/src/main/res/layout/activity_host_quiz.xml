@@ -24,23 +24,12 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <TextView
-        android:id="@+id/quiz_guest_name"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:background="@color/color_accent"
-        app:layout_constraintTop_toBottomOf="@+id/host_quiz_toolbar_layout"
-        tools:text="Example name"/>
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/quiz_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:stackFromEnd="true"
-        app:layout_constraintTop_toBottomOf="@+id/quiz_guest_name"
+        app:layout_constraintTop_toBottomOf="@+id/host_quiz_toolbar_layout"
         app:layout_constraintBottom_toTopOf="@+id/quiz_form"/>
 
     <android.support.constraint.ConstraintLayout

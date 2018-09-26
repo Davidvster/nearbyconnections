@@ -5,10 +5,13 @@ import android.content.Intent
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
+import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_chat.*
 import java.util.Date
 
@@ -19,6 +22,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
 
     private lateinit var connectionAdapter: ConnectionAdapter
     private lateinit var chatAdapter: ChatAdapter
+    private lateinit var guestListMenu: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +72,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         chat_room_layout.visibility = View.VISIBLE
         connection_layout.visibility = View.GONE
         connectionAdapter.connectionList = mutableListOf()
+        guestListMenu.isVisible = true
     }
 
     override fun setConnectionRoom() {
@@ -77,6 +82,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         chatAdapter.messagesList = mutableListOf()
         supportActionBar!!.title = "Connect to a Chat Room"
         presenter.startDiscovery()
+        guestListMenu.isVisible = false
 
     }
 
@@ -95,15 +101,18 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         connectionAdapter.notifyDataSetChanged()
     }
 
-    override fun setParticipantsList(guestNames: List<String>) {
-        chat_guest_name.text = "Chatting with: " + guestNames
-    }
-
     override fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>) {
         chatAdapter.messagesList = messageList.toMutableList()
         chatAdapter.notifyItemInserted(messageList.size-1)
         chat_input.text = null
         chat_content.scrollToPosition(messageList.size - 1)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_guests, menu)
+        guestListMenu = menu.findItem(R.id.guests_list)
+        guestListMenu.isVisible = false
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -117,6 +126,18 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
                     this.finish()
                 }
                 return true
+            }
+            R.id.guests_list -> {
+                if (presenter.getGuestList().isNotEmpty()) {
+                    GuestListDialog(this).init(presenter.getGuestList())
+                            .setPositiveButton { dialog ->
+                                dialog.dismiss()
+                            }
+                            .setTitleText("Chat-room host: " + presenter.getHostUsername())
+                            .show()
+                } else{
+                    Toast.makeText(this, resources.getString(R.string.only_two_participants), Toast.LENGTH_LONG)
+                }
             }
         }
         return false

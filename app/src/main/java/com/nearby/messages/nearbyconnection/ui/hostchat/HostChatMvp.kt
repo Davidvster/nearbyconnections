@@ -6,7 +6,6 @@ import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 interface HostChatMvp : BaseMvp {
     interface View : BaseMvp.View {
         fun setMessages(messageList: List<Pair<ChatMessage, Int>>)
-        fun setParticipantsTitle(guestNames: List<String>)
         fun showConnectionDialog(user: String, endpointId: String)
     }
 
@@ -19,5 +18,6 @@ interface HostChatMvp : BaseMvp {
         fun sendMessage(message: String, endpointId: String = "")
         fun acceptConnection(user: String, endpointId: String)
         fun rejectConnection(endpointId: String)
+        fun getGuestList(): List<String>
     }
 }

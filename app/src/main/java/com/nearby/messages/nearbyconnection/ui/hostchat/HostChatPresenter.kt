@@ -53,7 +53,7 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
-                    view?.setParticipantsTitle(guests.map { it.username })
+//                    view?.setParticipantsTitle(guests.map { it.username })
                     Log.v("SOGOVOREC1", "We're connected! Can now start sending and receiving data. " + endpointId)
                     sendParticipants()
                 }
@@ -74,7 +74,7 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
         override fun onDisconnected(endpointId: String) {
             Log.v("SOGOVOREC", "We've been disconnected from this endpoint. " + endpointId)
             guests.remove(guests.find { it.endpointId == endpointId })
-            view?.setParticipantsTitle(guests.map { it.username })
+//            view?.setParticipantsTitle(guests.map { it.username })
             sendParticipants()
         }
     }
@@ -89,7 +89,6 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
     override fun stopAllConnections() {
         connectionsClient.stopAllEndpoints()
     }
-
 
     override fun startAdvertising() {
         Log.v("POVEZAVA", "started advertising")
@@ -119,7 +118,7 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
         for (guest in guests) {
             val tmpGuestNames = guests.toMutableList()
             tmpGuestNames.remove(guest)
-            tmpGuestNames.add(Guest("chathost", username, 0))
+//            tmpGuestNames.add(Guest("chathost", username, 0))
             val message = Gson().toJson(Participant(tmpGuestNames.map { it.username }))
             connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(message.toByteArray()))
         }
@@ -127,12 +126,15 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
 
     override fun acceptConnection(user: String, endpointId: String) {
         guests.add(Guest(endpointId, user))
-        // Automatically accept the connection on both sides.
         connectionsClient.acceptConnection(endpointId, payloadCallback)
 
     }
 
     override fun rejectConnection(endpointId: String) {
         connectionsClient.rejectConnection(endpointId)
+    }
+
+    override fun getGuestList(): List<String> {
+        return guests.map { it.username }
     }
 }

@@ -6,7 +6,6 @@ import com.nearby.messages.nearbyconnection.data.model.QuizResult
 
 interface HostQuizMvp : BaseMvp {
     interface View : BaseMvp.View {
-        fun setParticipantsTitle(guestNames: List<String>)
         fun showConnectionDialog(user: String, endpointId: String)
         fun updateQuizResult(resultList: MutableList<QuizResult>)
     }
@@ -19,5 +18,6 @@ interface HostQuizMvp : BaseMvp {
         fun stopAllConnections()
         fun init(username: String, packageName: String, cardColor: Int)
         fun sendQuestion(question: QuizQuestion, correctAnswer: Int)
+        fun getGuestList(): List<String>
     }
 }

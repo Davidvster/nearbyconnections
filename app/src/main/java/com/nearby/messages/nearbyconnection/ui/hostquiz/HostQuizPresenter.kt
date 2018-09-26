@@ -69,7 +69,7 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
-                    view?.setParticipantsTitle(guests.map { it.username })
+//                    view?.setParticipantsTitle(guests.map { it.username })
                     Log.v("SOGOVOREC1", "We're connected! Can now start sending and receiving data. " + endpointId)
                     sendParticipants()
                 }
@@ -91,7 +91,7 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
             Log.v("SOGOVOREC", "We've been disconnected from this endpoint. " + endpointId)
 //            guestsEndpointId.remove(endpointId)
             guests.remove(guests.find { it.endpointId == endpointId })
-            view?.setParticipantsTitle(guests.map { it.username })
+//            view?.setParticipantsTitle(guests.map { it.username })
             sendParticipants()
         }
     }
@@ -193,4 +193,7 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
         }
     }
 
+    override fun getGuestList(): List<String> {
+        return guests.map { it.username }
+    }
 }

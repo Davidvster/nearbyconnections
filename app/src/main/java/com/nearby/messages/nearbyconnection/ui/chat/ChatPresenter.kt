@@ -26,10 +26,10 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
     private lateinit var connectionsClient: ConnectionsClient
 
-    private var opponentEndpointId = ""
-    private var guestNames = HashMap<String, String>()
-    private var avaibleGuests = HashMap<String, String>()
-//    private var messageList = mutableListOf<Pair<Pair<String, String>, Int>>()
+    private var hostEndpointId = ""
+    private var availableGuests = HashMap<String, String>()
+
+    private var guestList = listOf<String>()
     private var messageList = mutableListOf<Pair<ChatMessage, Int>>()
 
     private lateinit var packageName: String
@@ -47,7 +47,8 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
             } else {
                 val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
                 if (guests.participants != null) {
-                    view?.setParticipantsList(guests.participants)
+                    guestList = guests.participants
+//                    view?.setParticipantsList(guests.participants)
                 }
             }
         }
@@ -60,15 +61,15 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         override fun onEndpointFound(endpointId: String, discoveredEndpointInfo: DiscoveredEndpointInfo) {
             Log.v("SOGOVOREC", "An endpoint was found: " + endpointId)
             if (!connected) {
-                avaibleGuests[endpointId] = discoveredEndpointInfo.endpointName + " ChatRoom"
-                view?.updateConnectionList(avaibleGuests.toMutableMap().toList().toMutableList())
+                availableGuests[endpointId] = discoveredEndpointInfo.endpointName
+                view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
             }
         }
 
         override fun onEndpointLost(endpointId: String) {
             // A previously discovered endpoint has gone away.
-            avaibleGuests.remove(endpointId)
-            view?.updateConnectionList(avaibleGuests.toMutableMap().toList().toMutableList())
+            availableGuests.remove(endpointId)
+            view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
             Log.v("SOGOVOREC", "A previously discovered endpoint has gone away. " + endpointId)
         }
     }
@@ -84,20 +85,18 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
                     stopDiscovery()
-                    opponentEndpointId = endpointId
+                    hostEndpointId = endpointId
                     connected = true
-                    view?.setToolbarTitle(avaibleGuests[endpointId]!!)
+                    view?.setToolbarTitle(availableGuests[endpointId]!! + " Chat-Room")
                     view?.setChatRoom()
                     Log.v("SOGOVOREC1", "We're connected! Can now start sending and receiving data. " + endpointId)
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
-                    guestNames.remove(endpointId)
                     connected = false
                     view?.setProgressVisible(false)
                     Log.v("SOGOVOREC2", "We're rejected by " + endpointId)
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
-                    guestNames.remove(endpointId)
                     connected = false
                     view?.setProgressVisible(false)
                     Log.v("SOGOVOREC3", "The connection broke before it was able to be accepted. " + endpointId)
@@ -107,9 +106,8 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
         override fun onDisconnected(endpointId: String) {
             Log.v("SOGOVOREC", "We've been disconnected from this endpoint. " + endpointId)
-            avaibleGuests = HashMap()
-            opponentEndpointId = ""
-            guestNames.remove(endpointId)
+            availableGuests = HashMap()
+            hostEndpointId = ""
             stopDiscovery()
             startDiscovery()
             connected = false
@@ -132,7 +130,7 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
     override fun sendMessage(message: String) {
         val chatMessage = ChatMessage(username, message, Date().toString(), cardColor)
         val dataToSend = Gson().toJson(chatMessage)
-        connectionsClient.sendPayload(opponentEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
+        connectionsClient.sendPayload(hostEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
     }
 
     override fun stopDiscovery() {
@@ -152,7 +150,6 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
     }
 
     override fun acceptConnection(user: String, endpointId: String) {
-        guestNames[endpointId] = user
         connectionsClient.acceptConnection(endpointId, payloadCallback)
     }
 
@@ -161,9 +158,16 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
     }
 
     override fun requestConnection(endpointId: String) {
-        if (avaibleGuests[endpointId] != null) {
+        if (availableGuests[endpointId] != null) {
             connectionsClient.requestConnection(username, endpointId, connectionLifecycleCallback)
         }
+    }
 
+    override fun getGuestList(): List<String> {
+        return guestList
+    }
+
+    override fun getHostUsername(): String {
+        return availableGuests[hostEndpointId]?: ""
     }
 }

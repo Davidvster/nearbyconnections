@@ -2,4 +2,6 @@
     <string name="app_name">NearbyConnection</string>
     <string name="color_cancel">Cancel</string>
     <string name="color_confirm">Ok</string>
+    <string name="dialog_guest_participant">Participants in this room:</string>
+    <string name="only_two_participants">There are only you and the host in this room.</string>
 </resources>

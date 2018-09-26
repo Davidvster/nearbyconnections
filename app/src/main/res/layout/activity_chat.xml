@@ -65,22 +65,13 @@
         app:layout_constraintBottom_toBottomOf="parent"
         tools:visibility="visible">
 
-        <TextView
-            android:id="@+id/chat_guest_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:background="@color/color_accent"
-            tools:text="Example name"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/chat_content"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:stackFromEnd="true"
-            app:layout_constraintTop_toBottomOf="@+id/chat_guest_name"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@+id/chat_input_layout"/>
 
         <android.support.v7.widget.CardView
