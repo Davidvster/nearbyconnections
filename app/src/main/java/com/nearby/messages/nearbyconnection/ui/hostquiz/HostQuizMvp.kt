@@ -9,6 +9,7 @@ interface HostQuizMvp : BaseMvp {
         fun setParticipantsTitle(guestNames: List<String>)
         fun showConnectionDialog(user: String, endpointId: String)
         fun updateQuizResult(resultList: MutableList<QuizResult>)
+        fun updateQuizResultUIthread(resultList: MutableList<QuizResult>)
     }
 
     interface Presenter : BaseMvp.Presenter {

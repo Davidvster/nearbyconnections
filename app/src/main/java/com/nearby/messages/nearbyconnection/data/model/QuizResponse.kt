@@ -1,8 +1,6 @@
 package com.nearby.messages.nearbyconnection.data.model
 
 data class QuizResponse(val response: Int,
-                        val dateReceived: String,
-                        val dateSent: String) {
-    var endpointId: String? = null
-    var correct: Boolean = false
+                        val timeTaken: Long) {
+    var endpointId: String = ""
 }

@@ -47,7 +47,7 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
             } else {
                 val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
                 if (guests.participants != null) {
-                    view?.setParitipantsList(guests.participants)
+                    view?.setParticipantsList(guests.participants)
                 }
             }
 
@@ -219,10 +219,6 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         guestNames[endpointId] = user
         // Automatically accept the connection on both sides.
         connectionsClient.acceptConnection(endpointId, payloadCallback)
-    }
-
-    override fun getAvaibleGuests(): HashMap<String, String>{
-        return avaibleGuests
     }
 
     override fun isConnected(): Boolean {

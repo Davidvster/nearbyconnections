@@ -17,7 +17,6 @@ import com.nearby.messages.nearbyconnection.data.model.QuizQuestion
 import com.nearby.messages.nearbyconnection.data.model.QuizResult
 import com.nearby.messages.nearbyconnection.ui.quiz.QuizAdapter
 import kotlinx.android.synthetic.main.activity_host_quiz.*
-
 class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View {
 
     private lateinit var username: String
@@ -71,6 +70,14 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
         quizAdapter.resultList = resultList
         quizAdapter.notifyItemInserted(resultList.size-1)
         quiz_content.scrollToPosition(resultList.size -1)
+    }
+
+    override fun updateQuizResultUIthread(resultList: MutableList<QuizResult>) {
+        runOnUiThread {
+            quizAdapter.resultList = resultList
+            quizAdapter.notifyItemInserted(resultList.size-1)
+            quiz_content.scrollToPosition(resultList.size -1)
+        }
     }
 
     override fun setParticipantsTitle(guestNames: List<String>) {

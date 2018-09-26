@@ -94,7 +94,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
 //        connection_content.scrollToPosition(availableRooms.size - 1)
     }
 
-    override fun setParitipantsList(guestNames: List<String>) {
+    override fun setParticipantsList(guestNames: List<String>) {
         chat_guest_name.text = "Chatting with: " + guestNames
     }
 

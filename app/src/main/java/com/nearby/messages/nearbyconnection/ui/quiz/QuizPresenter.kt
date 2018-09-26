@@ -126,7 +126,7 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
     }
 
     override fun sendAnswer(response: Int) {
-        val quizResponse = QuizResponse(response, dateReceived.toString(), Date().toString())
+        val quizResponse = QuizResponse(response, Date().time - dateReceived.time)
         val dataToSend = Gson().toJson(quizResponse)
         connectionsClient.sendPayload(opponentEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
 //        }
@@ -152,7 +152,7 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
         connectionsClient.acceptConnection(endpointId, payloadCallback)
     }
 
-    override fun getAvaibleGuests(): HashMap<String, String>{
+    override fun getAvailableGuests(): HashMap<String, String>{
         return availableGuests
     }
 

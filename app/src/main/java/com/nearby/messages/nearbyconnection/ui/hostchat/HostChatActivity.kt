@@ -59,7 +59,7 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         chat_guest_name.visibility = View.VISIBLE
 
         builder.setTitle("Connection found")
-        builder.setMessage(user+ " wants to connect to you!")
+        builder.setMessage(user + " wants to connect to you!")
         builder.setPositiveButton("Accept") { dialog, which ->
             chat_guest_name.visibility = View.VISIBLE
             presenter.acceptConnection(user, endpointId)

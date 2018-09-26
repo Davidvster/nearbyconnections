@@ -25,7 +25,7 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         super.onCreate(savedInstanceState)
         presenter = QuizPresenter(this)
         setContentView(R.layout.activity_quiz)
-
+        
         title = "Connect to a Quiz Room"
         setSupportActionBar(quiz_toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)

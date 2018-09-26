@@ -1,6 +1,7 @@
 package com.nearby.messages.nearbyconnection.ui.hostquiz
 
 import android.content.Context
+import android.support.annotation.UiThread
 import android.util.Log
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
@@ -16,12 +17,15 @@ import com.google.android.gms.nearby.connection.Strategy
 import com.google.gson.Gson
 import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
+import com.nearby.messages.nearbyconnection.data.model.Guest
 import com.nearby.messages.nearbyconnection.data.model.Participant
 import com.nearby.messages.nearbyconnection.data.model.QuizQuestion
 import com.nearby.messages.nearbyconnection.data.model.QuizResponse
 import com.nearby.messages.nearbyconnection.data.model.QuizResult
-import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Timer
+import kotlin.concurrent.timerTask
 
 class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val context: Context = AppModule.application) : BasePresenter<HostQuizMvp.View>(hostQuizView), HostQuizMvp.Presenter {
 
@@ -29,6 +33,7 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
 
     private var guestsEndpointId = mutableListOf<String>()
     private var guestNames = HashMap<String, String>()
+    private var guests = mutableListOf<Guest>()
     private var currentQuizResponses = mutableListOf<QuizResponse>()
     private var resultList = mutableListOf<QuizResult>()
 
@@ -36,31 +41,37 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
     private var username = ""
     private var cardColor = -1
     private var correctAnswer = 0
+    private var quizEnded = true
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             Log.v("SOGOVOREC", endpointId+" sent a message: "+ String(payload.asBytes()!!))
             val quizResponse = Gson().fromJson(String(payload.asBytes()!!), QuizResponse::class.java)
-            if (quizResponse.dateReceived != null && quizResponse.dateSent != null && quizResponse.response != null) {
+            if (quizResponse.timeTaken != null && quizResponse.response != null) {
                 quizResponse.endpointId = endpointId
                 currentQuizResponses.add(quizResponse)
                 if (currentQuizResponses.size == guestsEndpointId.size) {
-                    val parser = SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy")
-                    var quizResult = QuizResult("")
-                    var minTime = Long.MAX_VALUE
-                    for (response in currentQuizResponses) {
-                        if (response.response == correctAnswer) {
-                            val timeDiff = parser.parse(response.dateSent).time - parser.parse(response.dateReceived).time
-                            if (timeDiff < minTime) {
-                                quizResult = QuizResult(guestNames[response.endpointId]!!)
-                                minTime = timeDiff
-                            }
-                        }
-                    }
-                    currentQuizResponses = mutableListOf()
-                    sendMessage(guestsEndpointId.toList(), Gson().toJson(quizResult))
-                    resultList.add(quizResult)
-                    view?.updateQuizResult(resultList)
+                    endOfQuiz()
+//                    lateinit var winnerResponse: QuizResponse
+//                    var minTime = Long.MAX_VALUE
+//                    for (response in currentQuizResponses) {
+//                        if (response.response == correctAnswer && response.timeTaken < minTime) {
+//                            winnerResponse = response
+////                                quizResult = QuizResult(guestNames[response.endpointId]!! + " responded in "+ Date(timeDiff).toString())
+//                            minTime = response.timeTaken
+//                        }
+//                    }
+//                    val cal = Calendar.getInstance()
+//                    cal.time = Date(winnerResponse.timeTaken)
+//                    val seconds =  cal.get(Calendar.SECOND)
+//                    currentQuizResponses = mutableListOf()
+//                    var quizResult = QuizResult(guestNames[winnerResponse.endpointId]!! + " responded in $seconds second/s")
+//                    sendMessage(guestsEndpointId.toList(), Gson().toJson(quizResult), winnerResponse.endpointId)
+//                    resultList.add(quizResult)
+//                    view?.updateQuizResult(resultList)
+//
+//                    quizResult = QuizResult("Congratulations you won, you responded in $seconds second/s")
+//                    sendMessage(listOf(winnerResponse.endpointId), Gson().toJson(quizResult))
                 }
 //                if (quizResponse.response == correctAnswer) {
 //                    val quizResult = QuizResult(guestNames[endpointId]!!)
@@ -102,8 +113,6 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
         }
 
         override fun onDisconnected(endpointId: String) {
-            // We've been disconnected from this endpoint. No more data can be
-            // sent or received.
             Log.v("SOGOVOREC", "We've been disconnected from this endpoint. " + endpointId)
             guestsEndpointId.remove(endpointId)
             guestNames.remove(endpointId)
@@ -153,17 +162,55 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
         connectionsClient.rejectConnection(endpointId)
     }
 
-    private fun sendMessage(endpointIds: List<String>, message: String) {
+    private fun sendMessage(endpointIds: List<String>, message: String, endpointId: String? = null) {
         for (guest in endpointIds) {
-            connectionsClient.sendPayload(guest, Payload.fromBytes(message.toByteArray()))
+            if (guest != endpointId) {
+                connectionsClient.sendPayload(guest, Payload.fromBytes(message.toByteArray()))
+            }
         }
     }
 
     override fun sendQuestion(question: QuizQuestion, correctAnswer: Int) {
         this.correctAnswer = correctAnswer
+        quizEnded = false
         for (guest in guestsEndpointId) {
             val message = Gson().toJson(question)
             connectionsClient.sendPayload(guest, Payload.fromBytes(message.toByteArray()))
         }
+        Timer().schedule(timerTask { endOfQuiz() }, 60000)
     }
+
+    private fun endOfQuiz() {
+        if (quizEnded.not()) {
+            quizEnded = true
+            var winnerResponse: QuizResponse? = null
+            var minTime = Long.MAX_VALUE
+            for (response in currentQuizResponses) {
+                if (response.response == correctAnswer && response.timeTaken < minTime) {
+                    winnerResponse = response
+//                                quizResult = QuizResult(guestNames[response.endpointId]!! + " responded in "+ Date(timeDiff).toString())
+                    minTime = response.timeTaken
+                }
+            }
+            if (winnerResponse != null) {
+                val cal = Calendar.getInstance()
+                cal.time = Date(winnerResponse.timeTaken)
+                val seconds =  cal.get(Calendar.SECOND)
+                currentQuizResponses = mutableListOf()
+                var quizResult = QuizResult(guestNames[winnerResponse.endpointId]!! + " responded in $seconds second/s!")
+                sendMessage(guestsEndpointId.toList(), Gson().toJson(quizResult), winnerResponse.endpointId)
+                resultList.add(quizResult)
+                view?.updateQuizResult(resultList)
+
+                quizResult = QuizResult("Congratulations you won, you responded in $seconds second/s!")
+                sendMessage(listOf(winnerResponse.endpointId), Gson().toJson(quizResult))
+            } else {
+                var quizResult = QuizResult("There are no winners for this round!")
+                sendMessage(guestsEndpointId.toList(), Gson().toJson(quizResult))
+                resultList.add(quizResult)
+                view?.updateQuizResultUIthread(resultList)
+            }
+        }
+    }
+
 }

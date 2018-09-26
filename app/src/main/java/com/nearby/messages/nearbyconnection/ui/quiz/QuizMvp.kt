@@ -19,7 +19,7 @@ interface QuizMvp : BaseMvp {
     interface Presenter : BaseMvp.Presenter {
         fun requestConnection(endpointId: String)
         fun isConnected(): Boolean
-        fun getAvaibleGuests(): HashMap<String, String>
+        fun getAvailableGuests(): HashMap<String, String>
         fun acceptConnection(user: String, endpointId: String)
         fun stopAllConnections()
         fun startDiscovery()
