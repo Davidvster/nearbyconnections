@@ -52,7 +52,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         }
 
         chat_send.setOnClickListener {
-            if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "") {
+            if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
                 presenter.sendMessage(chat_input.text.toString())
                 val chatMessage = ChatMessage(username, chat_input.text.toString(), Date().toString(), cardColor)
                 presenter.addMessage(Pair(chatMessage, 1))
@@ -83,22 +83,23 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
     override fun setProgressVisible(visible: Boolean) {
         if (visible) {
             connection_progress.visibility = View.VISIBLE
+            connectionAdapter.isClickable = false
         } else {
             connection_progress.visibility = View.GONE
+            connectionAdapter.isClickable = true
         }
     }
 
     override fun updateConnectionList(availableRooms: MutableList<Pair<String, String>>) {
         connectionAdapter.connectionList = availableRooms
-        connectionAdapter.notifyItemInserted(availableRooms.size-1)
-//        connection_content.scrollToPosition(availableRooms.size - 1)
+        connectionAdapter.notifyDataSetChanged()
     }
 
     override fun setParticipantsList(guestNames: List<String>) {
         chat_guest_name.text = "Chatting with: " + guestNames
     }
 
-    override fun setMessages(messageList: List<Pair<ChatMessage, Int>>) {
+    override fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>) {
         chatAdapter.messagesList = messageList.toMutableList()
         chatAdapter.notifyItemInserted(messageList.size-1)
         chat_input.text = null

@@ -121,9 +121,12 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
             }
             return false
         }
-        if (lobby_user_name.text.toString().replace("/^\\s*/".toRegex(), "").isEmpty()) {
+        if (lobby_user_name.text.toString().replace("\\s".toRegex(), "").isEmpty()) {
             lobby_user_name_error.text = "Please insert a valid username!"
             lobby_user_name_error.visibility = View.VISIBLE
+            if (android.os.Build.VERSION.SDK_INT >= 21) {
+                lobby_user_name.backgroundTintList = ColorStateList.valueOf( Color.RED )
+            }
             return false
         }
         return true

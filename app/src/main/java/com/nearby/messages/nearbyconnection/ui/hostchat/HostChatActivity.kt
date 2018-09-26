@@ -41,7 +41,7 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         chat_content.adapter = chatAdapter
 
         chat_send.setOnClickListener {
-            if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "") {
+            if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
                 val chatMessage = ChatMessage(username, chat_input.text.toString(), Date().toString(), cardColor)
                 presenter.sendMessage(Gson().toJson(chatMessage))
                 presenter.addMessage(Pair(chatMessage, 1))

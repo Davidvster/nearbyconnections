@@ -20,6 +20,11 @@ class QuizAdapter constructor(val context: Context) : RecyclerView.Adapter<QuizA
     override fun onBindViewHolder(holder: QuizAdapter.ViewHolder, position: Int) {
         resultList[holder.adapterPosition].let { result ->
             holder.itemView.findViewById<TextView>(R.id.result_element_name).text = "This round winner is: "+result.winnerName
+            val points = StringBuilder()
+            for (guest in result.guests) {
+                points.appendln(guest.username + " currently has " + guest.points + if(guest.points == 1L) " point" else " points")
+            }
+            holder.itemView.findViewById<TextView>(R.id.result_element_score).text = "Points:\n$points"
 
         }
     }

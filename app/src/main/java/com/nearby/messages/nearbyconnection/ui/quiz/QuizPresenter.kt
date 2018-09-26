@@ -33,6 +33,8 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
     private var resultList = mutableListOf<QuizResult>()
     private lateinit var dateReceived: Date
 
+    private var connectingTo = ""
+
     private lateinit var packageName: String
     private var username = ""
     private var cardColor = -1
@@ -76,6 +78,9 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
             availableGuests.remove(endpointId)
             view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
             Log.v("SOGOVOREC", "A previously discovered endpoint has gone away. " + endpointId)
+            if (connectingTo == endpointId) {
+                view?.setProgressVisible(false)
+            }
         }
     }
 
@@ -161,12 +166,10 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
     }
 
     override fun requestConnection(endpointId: String) {
-        if (availableGuests[endpointId] != null && availableGuests[endpointId] == "connected") {
-
-        } else if (availableGuests[endpointId] != null) {
+        if (availableGuests[endpointId] != null) {
+            connectingTo = endpointId
             connectionsClient.requestConnection(username, endpointId, connectionLifecycleCallback)
         }
-
     }
 
 }

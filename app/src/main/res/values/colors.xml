@@ -4,11 +4,13 @@
     <color name="color_primary_dark">#00600f</color>
     <color name="color_accent">#ff9800</color>
 
+    <color name="color_message_input_bg">@color/lobby_bg</color>
     <color name="color_message_bg">#adf1ee</color>
     <color name="color_message_bg_guest">#bde491</color>
     <color name="color_connection_bg">#ffb74d</color>
     <color name="lobby_bg">#a5d6a7</color>
     <color name="chat_bg">#cfd8dc</color>
+    <color name="progress_bg">#78000000</color>
 
     <color name="chat_color_1">#a7c0cd</color>
     <color name="chat_color_2">#b085f5</color>
@@ -27,5 +29,7 @@
     <color name="answer_b">#26a69a</color>
     <color name="answer_c">#9ccc65</color>
     <color name="answer_d">#ffee58</color>
+
+
 
 </resources>

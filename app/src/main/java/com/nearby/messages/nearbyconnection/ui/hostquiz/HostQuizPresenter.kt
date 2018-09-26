@@ -31,8 +31,8 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
 
     private lateinit var connectionsClient: ConnectionsClient
 
-    private var guestsEndpointId = mutableListOf<String>()
-    private var guestNames = HashMap<String, String>()
+//    private var guestsEndpointId = mutableListOf<String>()
+//    private var guestNames = HashMap<String, String>()
     private var guests = mutableListOf<Guest>()
     private var currentQuizResponses = mutableListOf<QuizResponse>()
     private var resultList = mutableListOf<QuizResult>()
@@ -50,36 +50,9 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
             if (quizResponse.timeTaken != null && quizResponse.response != null) {
                 quizResponse.endpointId = endpointId
                 currentQuizResponses.add(quizResponse)
-                if (currentQuizResponses.size == guestsEndpointId.size) {
+                if (currentQuizResponses.size == guests.size) {
                     endOfQuiz()
-//                    lateinit var winnerResponse: QuizResponse
-//                    var minTime = Long.MAX_VALUE
-//                    for (response in currentQuizResponses) {
-//                        if (response.response == correctAnswer && response.timeTaken < minTime) {
-//                            winnerResponse = response
-////                                quizResult = QuizResult(guestNames[response.endpointId]!! + " responded in "+ Date(timeDiff).toString())
-//                            minTime = response.timeTaken
-//                        }
-//                    }
-//                    val cal = Calendar.getInstance()
-//                    cal.time = Date(winnerResponse.timeTaken)
-//                    val seconds =  cal.get(Calendar.SECOND)
-//                    currentQuizResponses = mutableListOf()
-//                    var quizResult = QuizResult(guestNames[winnerResponse.endpointId]!! + " responded in $seconds second/s")
-//                    sendMessage(guestsEndpointId.toList(), Gson().toJson(quizResult), winnerResponse.endpointId)
-//                    resultList.add(quizResult)
-//                    view?.updateQuizResult(resultList)
-//
-//                    quizResult = QuizResult("Congratulations you won, you responded in $seconds second/s")
-//                    sendMessage(listOf(winnerResponse.endpointId), Gson().toJson(quizResult))
                 }
-//                if (quizResponse.response == correctAnswer) {
-//                    val quizResult = QuizResult(guestNames[endpointId]!!)
-////                    sendMessage(listOf(endpointId), Gson().toJson(quizResult)) //winner
-//                    sendMessage(guestsEndpointId.toList(), Gson().toJson(quizResult))
-//                    resultList.add(quizResult)
-//                    view?.updateQuizResult(resultList)
-//                }
             }
         }
 
@@ -96,27 +69,30 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
             when (result.status.statusCode) {
                 ConnectionsStatusCodes.STATUS_OK -> {
-                    guestsEndpointId.add(endpointId)
-                    view?.setParticipantsTitle(guestNames.values.toList())
+                    view?.setParticipantsTitle(guests.map { it.username })
                     Log.v("SOGOVOREC1", "We're connected! Can now start sending and receiving data. " + endpointId)
-                    sendParticipants(guestNames)
+                    sendParticipants()
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
-                    guestNames.remove(endpointId)
+                    guests.remove(guests.find { it.endpointId == endpointId })
                     Log.v("SOGOVOREC2", "We're connected! Can now start sending and receiving data. " + endpointId)
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
-                    guestNames.remove(endpointId)
+                    guests.remove(guests.find { it.endpointId == endpointId })
                     Log.v("SOGOVOREC3", "The connection broke before it was able to be accepted. " + endpointId)
+                }
+                else -> {
+                    guests.remove(guests.find { it.endpointId == endpointId })
                 }
             }
         }
 
         override fun onDisconnected(endpointId: String) {
             Log.v("SOGOVOREC", "We've been disconnected from this endpoint. " + endpointId)
-            guestsEndpointId.remove(endpointId)
-            guestNames.remove(endpointId)
-            view?.setParticipantsTitle(guestNames.values.toList())
+//            guestsEndpointId.remove(endpointId)
+            guests.remove(guests.find { it.endpointId == endpointId })
+            view?.setParticipantsTitle(guests.map { it.username })
+            sendParticipants()
         }
     }
 
@@ -131,7 +107,6 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
         connectionsClient.stopAllEndpoints()
     }
 
-
     override fun startAdvertising() {
         Log.v("POVEZAVA", "started advertising")
         connectionsClient.startAdvertising(
@@ -143,18 +118,18 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
         connectionsClient.stopAdvertising()
     }
 
-    private fun sendParticipants(guestNames: HashMap<String, String>) {
-        for (guest in guestsEndpointId) {
-            val tmpGuestNames = guestNames.clone() as HashMap<String, String>
+    private fun sendParticipants() {
+        for (guest in guests) {
+            val tmpGuestNames = guests.toMutableList()
             tmpGuestNames.remove(guest)
-            tmpGuestNames["username"] = username
-            val message = Gson().toJson(Participant(tmpGuestNames.values.toList()))
-            connectionsClient.sendPayload(guest, Payload.fromBytes(message.toByteArray()))
+//            tmpGuestNames.add(Guest("quizhost", username, 0))
+            val message = Gson().toJson(Participant(tmpGuestNames.map { it.username}))
+            connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(message.toByteArray()))
         }
     }
 
     override fun acceptConnection(user: String, endpointId: String) {
-        guestNames[endpointId] = user
+        guests.add(Guest(endpointId, user))
         connectionsClient.acceptConnection(endpointId, payloadCallback)
     }
 
@@ -173,11 +148,13 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
     override fun sendQuestion(question: QuizQuestion, correctAnswer: Int) {
         this.correctAnswer = correctAnswer
         quizEnded = false
-        for (guest in guestsEndpointId) {
+        for (guest in guests) {
             val message = Gson().toJson(question)
-            connectionsClient.sendPayload(guest, Payload.fromBytes(message.toByteArray()))
+            connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(message.toByteArray()))
         }
-        Timer().schedule(timerTask { endOfQuiz() }, 60000)
+        Timer().schedule(timerTask {
+            endOfQuiz()
+        }, 60000)
     }
 
     private fun endOfQuiz() {
@@ -186,10 +163,12 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
             var winnerResponse: QuizResponse? = null
             var minTime = Long.MAX_VALUE
             for (response in currentQuizResponses) {
-                if (response.response == correctAnswer && response.timeTaken < minTime) {
-                    winnerResponse = response
-//                                quizResult = QuizResult(guestNames[response.endpointId]!! + " responded in "+ Date(timeDiff).toString())
-                    minTime = response.timeTaken
+                if (response.response == correctAnswer) {
+                    guests.find { it.endpointId == response.endpointId }!!.points += 60000 - response.timeTaken
+                    if (response.timeTaken < minTime) {
+                        winnerResponse = response
+                        minTime = response.timeTaken
+                    }
                 }
             }
             if (winnerResponse != null) {
@@ -197,18 +176,19 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
                 cal.time = Date(winnerResponse.timeTaken)
                 val seconds =  cal.get(Calendar.SECOND)
                 currentQuizResponses = mutableListOf()
-                var quizResult = QuizResult(guestNames[winnerResponse.endpointId]!! + " responded in $seconds second/s!")
-                sendMessage(guestsEndpointId.toList(), Gson().toJson(quizResult), winnerResponse.endpointId)
+                val winner = guests.find { it.endpointId == winnerResponse.endpointId }
+                var quizResult = QuizResult(winner!!.username + " responded in $seconds second/s!", guests.sortedByDescending { it.points })
+                sendMessage(guests.map { it.endpointId }, Gson().toJson(quizResult), winnerResponse.endpointId)
                 resultList.add(quizResult)
                 view?.updateQuizResult(resultList)
 
-                quizResult = QuizResult("Congratulations you won, you responded in $seconds second/s!")
+                quizResult = QuizResult("Congratulations you won, you responded in $seconds second/s!", guests.sortedByDescending { it.points })
                 sendMessage(listOf(winnerResponse.endpointId), Gson().toJson(quizResult))
             } else {
-                var quizResult = QuizResult("There are no winners for this round!")
-                sendMessage(guestsEndpointId.toList(), Gson().toJson(quizResult))
+                var quizResult = QuizResult("There are no winners for this round!", guests.sortedByDescending { it.points })
+                sendMessage(guests.map { it.endpointId }, Gson().toJson(quizResult))
                 resultList.add(quizResult)
-                view?.updateQuizResultUIthread(resultList)
+                view?.updateQuizResult(resultList)
             }
         }
     }

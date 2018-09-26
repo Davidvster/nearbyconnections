@@ -100,8 +100,10 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
     override fun setProgressVisible(visible: Boolean) {
         if (visible) {
             connection_progress.visibility = View.VISIBLE
+            connectionAdapter.isClickable = false
         } else {
             connection_progress.visibility = View.GONE
+            connectionAdapter.isClickable = true
         }
     }
 
@@ -114,7 +116,7 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
 
     override fun updateConnectionList(availableRooms: MutableList<Pair<String, String>>) {
         connectionAdapter.connectionList = availableRooms
-        connectionAdapter.notifyItemInserted(availableRooms.size-1)
+        connectionAdapter.notifyDataSetChanged()
     }
 
     override fun setParticipantsList(guestNames: List<String>) {

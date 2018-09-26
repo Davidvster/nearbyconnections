@@ -20,20 +20,37 @@
         app:cardCornerRadius="10dp"
         android:elevation="5dp">
 
-        <TextView
-            android:id="@+id/result_element_name"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:text="The winner for this round is: "/>
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/result_element_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                tools:text="The winner for this round is: "/>
+
+            <TextView
+                android:id="@+id/result_element_score"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textSize="14sp"
+                android:textColor="@android:color/black"
+                tools:text="Points: "/>
+
+        </LinearLayout>
 
     </android.support.v7.widget.CardView>
 

@@ -7,7 +7,7 @@ interface ChatMvp : BaseMvp {
     interface View : BaseMvp.View {
         fun setParticipantsList(guestNames: List<String>)
         fun updateConnectionList(availableRooms: MutableList<Pair<String, String>>)
-        fun setMessages(messageList: List<Pair<ChatMessage, Int>>)
+        fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>)
         fun setChatRoom()
         fun setConnectionRoom()
         fun setProgressVisible(visible: Boolean)

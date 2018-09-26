@@ -14,6 +14,8 @@ class ConnectionAdapter constructor(val context: Context) : RecyclerView.Adapter
 
     var onRoomClicked: ((endpointId: String) -> Unit)? = null
 
+    var isClickable = true
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.element_connection, parent, false))
     }
@@ -22,7 +24,9 @@ class ConnectionAdapter constructor(val context: Context) : RecyclerView.Adapter
         connectionList[holder.adapterPosition].let { connection ->
             holder.itemView.connection_element_name.text = connection.second
             holder.itemView.connection_card.setOnClickListener {
-                onRoomClicked!!.invoke(connection.first)
+                if (isClickable) {
+                    onRoomClicked!!.invoke(connection.first)
+                }
             }
         }
     }

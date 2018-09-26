@@ -67,12 +67,6 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
     }
 
     override fun updateQuizResult(resultList: MutableList<QuizResult>) {
-        quizAdapter.resultList = resultList
-        quizAdapter.notifyItemInserted(resultList.size-1)
-        quiz_content.scrollToPosition(resultList.size -1)
-    }
-
-    override fun updateQuizResultUIthread(resultList: MutableList<QuizResult>) {
         runOnUiThread {
             quizAdapter.resultList = resultList
             quizAdapter.notifyItemInserted(resultList.size-1)
