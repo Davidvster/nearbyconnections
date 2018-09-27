@@ -96,7 +96,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/color_white"
                 android:includeFontPadding="false"
-                tools:text="15"/>
+                tools:text="60"/>
         </android.support.v7.widget.CardView>
 
         <android.support.constraint.ConstraintLayout

@@ -1,5 +1,6 @@
 package com.nearby.messages.nearbyconnection.ui.hostquiz
 
+import android.animation.ValueAnimator
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
@@ -11,6 +12,8 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.animation.LinearInterpolator
 import android.widget.EditText
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.QuizQuestion
@@ -78,6 +81,7 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
             quiz_input_answer_d.isEnabled = enabled
             quiz_radio_answer_d.isEnabled = enabled
             if (enabled) {
+                quiz_timer_layout.visibility = View.GONE
                 quiz_input_question.text = null
                 quiz_input_answer_a.text = null
                 quiz_input_answer_b.text = null
@@ -88,6 +92,15 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
                 quiz_radio_answer_b.isChecked = false
                 quiz_radio_answer_c.isChecked = false
                 quiz_radio_answer_d.isChecked = false
+            } else {
+                quiz_timer_layout.visibility = View.VISIBLE
+                val animator = ValueAnimator.ofInt(60, 0)
+                animator.interpolator = LinearInterpolator()
+                animator.duration = 60000
+                animator.addUpdateListener { animation ->
+                    quiz_timer.text = animation.animatedValue.toString()
+                }
+                animator.start()
             }
         }
     }

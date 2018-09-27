@@ -65,7 +65,6 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         }
 
         override fun onEndpointLost(endpointId: String) {
-            // A previously discovered endpoint has gone away.
             availableGuests.remove(endpointId)
             view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
         }
