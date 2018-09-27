@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <integer-array name="card_colors">
-        <item>@color/chat_color_1</item>
-        <item>@color/chat_color_2</item>
-        <item>@color/chat_color_3</item>
-        <item>@color/chat_color_4</item>
-        <item>@color/chat_color_5</item>
-        <item>@color/chat_color_6</item>
-        <item>@color/chat_color_7</item>
-        <item>@color/chat_color_8</item>
-        <item>@color/chat_color_9</item>
-        <item>@color/chat_color_10</item>
-        <item>@color/chat_color_11</item>
-        <item>@color/chat_color_12</item>
-    </integer-array>
-
 
 </resources>
