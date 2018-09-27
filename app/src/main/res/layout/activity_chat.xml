@@ -1,57 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/messages_main">
+    android:id="@+id/messages_main"
+    android:animateLayoutChanges="true">
 
-    <TextView
-        android:id="@+id/messages_guest_name"
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/chat_toolbar_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:background="@color/colorAccent"
-        android:visibility="gone"
-        tools:text="Example name"
-        tools:visibility="visible"/>
+        android:layout_height="wrap_content">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/messages_content"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/chat_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            app:title="@string/chat_connect_room_title"
+            android:minHeight="?android:attr/actionBarSize"
+            android:theme="@style/ToolbarTheme"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    </android.support.design.widget.AppBarLayout>
+
+    <FrameLayout
+        android:id="@+id/connection_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:stackFromEnd="true"
-        app:layout_constraintTop_toBottomOf="@+id/message_connect"
-        app:layout_constraintBottom_toTopOf="@+id/messages_input"
-        android:visibility="gone"
-        tools:visibility="visible"/>
+        android:background="@color/chat_bg"
+        android:animateLayoutChanges="true"
+        app:layout_constraintTop_toBottomOf="@+id/chat_toolbar_layout"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <EditText
-        android:id="@+id/messages_input"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:hint="Enter message to send"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/connection_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <FrameLayout
+            android:id="@+id/connection_progress"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/progress_bg"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+        </FrameLayout>
+
+    </FrameLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/chat_room_layout"
         android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/chat_bg"
+        app:layout_constraintTop_toBottomOf="@+id/chat_toolbar_layout"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/messages_send"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
-
-    <Button
-        android:id="@+id/messages_send"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="SEND"
-        android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible">
 
 
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/chat_content"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:stackFromEnd="true"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/chat_input_layout"/>
 
+        <android.support.v7.widget.CardView
+            android:id="@+id/chat_input_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="5dp"
+            app:cardBackgroundColor="@color/color_message_input_bg"
+            android:elevation="5dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginEnd="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/chat_send"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <EditText
+                android:id="@+id/chat_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="4"
+                android:background="@null"
+                android:padding="10dp"
+                android:hint="@string/chat_message_input_hint"
+                />
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/chat_send"
+            android:layout_width="52dp"
+            android:layout_height="44dp"
+            app:cardCornerRadius="5dp"
+            app:cardBackgroundColor="@color/color_accent"
+            android:elevation="5dp"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginEnd="6dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingStart="2dp"
+                android:paddingLeft="2dp"
+                android:src="@drawable/ic_send"/>
+
+        </android.support.v7.widget.CardView>
+
+    </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

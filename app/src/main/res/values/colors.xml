@@ -1,8 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#90ff40</color>
+    <color name="color_primary">#388e3c</color>
+    <color name="color_primary_dark">#00600f</color>
+    <color name="color_accent">#ff9800</color>
+
+    <!--<color name="color_primary">#0CAAE8</color>-->
+    <!--<color name="color_primary_dark">#0D7BFF</color>-->
+    <!--<color name="color_accent">#0CE8AE</color>-->
+
+    <color name="color_transparent">#00ffffff</color>
+    <color name="color_message_input_bg">#96fae079</color>
+    <!--<color name="color_message_input_bg">#00FAFF</color>-->
     <color name="color_message_bg">#adf1ee</color>
     <color name="color_message_bg_guest">#bde491</color>
+    <color name="color_connection_bg">#ffb74d</color>
+    <color name="lobby_bg">#abd6a5</color>
+    <!--<color name="lobby_bg">#0DFF7B</color>-->
+    <color name="chat_bg">#cfd8dc</color>
+    <color name="progress_bg">#78000000</color>
+
+    <color name="color_white">#ffff</color>
+
+    <color name="chat_color_1">#a7c0cd</color>
+    <color name="chat_color_2">#b085f5</color>
+    <color name="chat_color_3">#80d6ff</color>
+    <color name="chat_color_4">#6ff9ff</color>
+    <color name="chat_color_5">#26a69a</color>
+    <color name="chat_color_6">#9ccc65</color>
+    <color name="chat_color_7">#ffff8b</color>
+    <color name="chat_color_8">#ffd95b</color>
+    <color name="chat_color_9">#ffa270</color>
+    <color name="chat_color_10">#ff867c</color>
+    <color name="chat_color_11">#be9c91</color>
+    <color name="chat_color_12">#ff77a9</color>
+
+    <color name="answer_a">#f44336</color>
+    <color name="answer_b">#43a047</color>
+    <color name="answer_c">#1e88e5</color>
+    <color name="answer_d">#fdd835</color>
+
+
+
 </resources>
