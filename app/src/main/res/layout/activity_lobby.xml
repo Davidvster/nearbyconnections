@@ -58,26 +58,22 @@
         app:layout_constraintTop_toBottomOf="@+id/lobby_user_name"
         tools:visibility="visible">
 
-
-        <android.support.constraint.ConstraintLayout
+        <android.support.v7.widget.CardView
             android:id="@+id/lobby_chat_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:animateLayoutChanges="true"
+            android:layout_height="46dp"
+            app:cardCornerRadius="23dp"
+            app:cardBackgroundColor="@color/color_accent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/lobby_chat_join"
-                android:layout_width="0dp"
-                android:layout_height="46dp"
-                app:cardBackgroundColor="@color/color_accent"
-                app:cardCornerRadius="23dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/lobby_chat_host">
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
+                    android:id="@+id/lobby_chat_join"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -85,22 +81,16 @@
                     android:textSize="14sp"
                     android:textColor="@color/color_white"
                     android:textAllCaps="false"
-                    android:paddingRight="15dp"
-                    android:text="@string/lobby_chat_room_join"/>
-
-            </android.support.v7.widget.CardView>
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/lobby_chat_host"
-                android:layout_width="0dp"
-                android:layout_height="46dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:cardBackgroundColor="@color/color_accent"
-                app:cardCornerRadius="23dp"
-                app:layout_constraintStart_toEndOf="@+id/lobby_chat_join"
-                app:layout_constraintTop_toTopOf="parent" >
+                    android:padding="15dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/lobby_chat_room_join"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/lobby_chat_title"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
                 <TextView
+                    android:id="@+id/lobby_chat_host"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -108,55 +98,57 @@
                     android:textSize="14sp"
                     android:textColor="@color/color_white"
                     android:textAllCaps="false"
-                    android:paddingLeft="15dp"
-                    android:text="@string/lobby_chat_room_host"/>
+                    android:padding="15dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/lobby_chat_room_host"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/lobby_chat_title"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
-            </android.support.v7.widget.CardView>
+                <TextView
+                    android:id="@+id/lobby_chat_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="46dp"
+                    android:minWidth="60dp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_white"
+                    android:textAllCaps="true"
+                    android:background="@color/color_primary"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:elevation="10dp"
+                    android:clickable="false"
+                    android:includeFontPadding="false"
+                    android:text="@string/lobby_chat_room"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
-            <TextView
-                android:id="@+id/lobby_chat_title"
-                android:layout_width="wrap_content"
-                android:layout_height="46dp"
-                android:minWidth="60dp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:textColor="@color/color_white"
-                android:textAllCaps="true"
-                android:background="@color/color_primary"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:elevation="10dp"
-                android:clickable="false"
-                android:text="@string/lobby_chat_room"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+            </android.support.constraint.ConstraintLayout>
 
-        </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
 
-
-        <android.support.constraint.ConstraintLayout
+        <android.support.v7.widget.CardView
             android:id="@+id/lobby_quiz_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="46dp"
+            app:cardCornerRadius="23dp"
+            app:cardBackgroundColor="@color/color_accent"
             android:layout_marginTop="25dp"
-            android:padding="5dp"
-            android:animateLayoutChanges="true"
             app:layout_constraintTop_toBottomOf="@+id/lobby_chat_layout">
 
-            <android.support.v7.widget.CardView
-                android:id="@+id/lobby_quiz_join"
-                android:layout_width="0dp"
-                android:layout_height="46dp"
-                app:cardBackgroundColor="@color/color_accent"
-                app:cardCornerRadius="23dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/lobby_quiz_host">
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
+                    android:id="@+id/lobby_quiz_join"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -164,23 +156,17 @@
                     android:textSize="14sp"
                     android:textColor="@color/color_white"
                     android:textAllCaps="false"
-                    android:paddingRight="15dp"
-                    android:text="@string/lobby_quiz_room_join"/>
+                    android:padding="15dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/lobby_quiz_room_join"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/lobby_quiz_title" />
 
-            </android.support.v7.widget.CardView>
-
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/lobby_quiz_host"
-                android:layout_width="0dp"
-                android:layout_height="46dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:cardBackgroundColor="@color/color_accent"
-                app:cardCornerRadius="23dp"
-                app:layout_constraintStart_toEndOf="@+id/lobby_quiz_join"
-                app:layout_constraintTop_toTopOf="parent" >
 
                 <TextView
+                    android:id="@+id/lobby_quiz_host"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -188,33 +174,39 @@
                     android:textSize="14sp"
                     android:textColor="@color/color_white"
                     android:textAllCaps="false"
-                    android:paddingLeft="15dp"
-                    android:text="@string/lobby_quiz_room_host"/>
+                    android:padding="15dp"
+                    android:includeFontPadding="false"
+                    android:text="@string/lobby_quiz_room_host"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/lobby_quiz_title"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
-            </android.support.v7.widget.CardView>
+                <TextView
+                    android:id="@+id/lobby_quiz_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="46dp"
+                    android:minWidth="60dp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_white"
+                    android:textAllCaps="true"
+                    android:background="@color/color_primary"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:elevation="10dp"
+                    android:clickable="false"
+                    android:includeFontPadding="false"
+                    android:text="@string/lobby_quiz_room"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
-            <TextView
-                android:id="@+id/lobby_quiz_title"
-                android:layout_width="wrap_content"
-                android:layout_height="46dp"
-                android:minWidth="60dp"
-                android:textStyle="bold"
-                android:gravity="center"
-                android:textSize="14sp"
-                android:textColor="@color/color_white"
-                android:textAllCaps="true"
-                android:background="@color/color_primary"
-                android:text="@string/lobby_quiz_room"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp"
-                android:elevation="10dp"
-                android:clickable="false"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+            </android.support.constraint.ConstraintLayout>
 
-        </android.support.constraint.ConstraintLayout>
+        </android.support.v7.widget.CardView>
 
 
         <android.support.v7.widget.CardView
@@ -240,6 +232,7 @@
                 android:textAllCaps="false"
                 android:paddingLeft="20dp"
                 android:paddingRight="20dp"
+                android:includeFontPadding="false"
                 android:text="@string/lobby_color_pick" />
 
         </android.support.v7.widget.CardView>

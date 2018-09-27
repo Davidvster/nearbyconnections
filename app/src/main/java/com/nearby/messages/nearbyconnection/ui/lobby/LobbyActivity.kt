@@ -19,13 +19,9 @@ import com.nearby.messages.nearbyconnection.ui.quiz.QuizActivity
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.view.animation.LinearInterpolator
 import com.nearby.messages.nearbyconnection.ui.views.CustomFlag
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
-import java.util.Timer
-import java.util.TimerTask
-import kotlin.concurrent.timerTask
 
 class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
 
