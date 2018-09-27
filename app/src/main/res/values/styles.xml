@@ -44,8 +44,8 @@
     </style>
 
     <style name="LobbyButton" parent="Base.TextAppearance.AppCompat.Button">
-        <item name="android:backgroundTint">@color/color_accent</item>
-        <item name="android:textColor">@color/color_white</item>
+        <item name="android:backgroundTint">@null</item>
+        <item name="android:textColor">@color/color_primary</item>
     </style>
 
     <style name="ColorButton" parent="LobbyButton">

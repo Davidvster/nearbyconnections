@@ -1,6 +1,7 @@
 package com.nearby.messages.nearbyconnection.ui.lobby
 
 import android.Manifest
+import android.animation.ValueAnimator
 import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
@@ -18,9 +19,13 @@ import com.nearby.messages.nearbyconnection.ui.quiz.QuizActivity
 import android.content.DialogInterface
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.view.animation.LinearInterpolator
 import com.nearby.messages.nearbyconnection.ui.views.CustomFlag
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import java.util.Timer
+import java.util.TimerTask
+import kotlin.concurrent.timerTask
 
 class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
 
@@ -68,7 +73,16 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
 
         lobby_user_name.setOnClickListener {
             lobby_user_name_error.visibility = View.GONE
-            lobby_layout.visibility = View.VISIBLE
+            if (lobby_layout.visibility == View.GONE) {
+                val animator = ValueAnimator.ofFloat(1f, 0.7f)
+                animator.duration = 1000
+                animator.addUpdateListener { animation ->
+                    lobby_logo.scaleX = animation.animatedValue.toString().toFloat()
+                    lobby_logo.scaleY = animation.animatedValue.toString().toFloat()
+                }
+                animator.start()
+                lobby_layout.visibility = View.VISIBLE
+            }
             if (android.os.Build.VERSION.SDK_INT >= 21) {
                 if (it.isFocused) {
                     lobby_user_name.backgroundTintList = ColorStateList.valueOf( accentEditColor )

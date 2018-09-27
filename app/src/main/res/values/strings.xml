@@ -41,10 +41,10 @@
     <string name="lobby_empty_username">Please insert an username!</string>
     <string name="lobby_invalid_username">Please insert a valid username!</string>
     <string name="lobby_nickname_hint">Enter your nickname</string>
-    <string name="lobby_chat_room">Chat-Room</string>
+    <string name="lobby_chat_room">Chat</string>
     <string name="lobby_chat_room_join">Join a chat room</string>
     <string name="lobby_chat_room_host">Host a chat room</string>
-    <string name="lobby_quiz_room">Quiz-Room</string>
+    <string name="lobby_quiz_room">Quiz</string>
     <string name="lobby_quiz_room_join">Join a quiz room</string>
     <string name="lobby_quiz_room_host">Host a quiz room</string>
     <string name="lobby_color_pick">Pick your color</string>
