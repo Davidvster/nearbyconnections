@@ -138,7 +138,7 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
 
     override fun startDiscovery() {
         connectionsClient.startDiscovery(
-                packageName, endpointDiscoveryCallback, DiscoveryOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build())
+                packageName, endpointDiscoveryCallback, DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build())
     }
 
     override fun stopAllConnections() {

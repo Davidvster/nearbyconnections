@@ -83,7 +83,7 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
 
     override fun startAdvertising() {
         connectionsClient.startAdvertising(
-                username, packageName, connectionLifecycleCallback, AdvertisingOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build())
+                username, packageName, connectionLifecycleCallback, AdvertisingOptions.Builder().setStrategy(Strategy.P2P_STAR).build())
     }
 
     override fun stopAdvertising() {

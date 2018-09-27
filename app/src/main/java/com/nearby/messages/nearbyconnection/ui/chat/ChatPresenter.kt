@@ -21,6 +21,7 @@ import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.data.model.Participant
+import java.text.SimpleDateFormat
 import java.util.Date
 
 class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Context = AppModule.application) : BasePresenter<ChatMvp.View>(chatView), ChatMvp.Presenter {
@@ -121,7 +122,9 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
     }
 
     override fun sendMessage(message: String) {
-        val chatMessage = ChatMessage(username, message, Date().toString(), cardColor)
+        val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
+        val formattedDate = format.format(Date())
+        val chatMessage = ChatMessage(username, message, formattedDate, cardColor)
         val dataToSend = Gson().toJson(chatMessage)
         connectionsClient.sendPayload(hostEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
     }
@@ -132,7 +135,7 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
     override fun startDiscovery() {
         connectionsClient.startDiscovery(
-                packageName, endpointDiscoveryCallback, DiscoveryOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build())
+                packageName, endpointDiscoveryCallback, DiscoveryOptions.Builder().setStrategy(Strategy.P2P_STAR).build())
     }
 
     override fun stopAllConnections() {

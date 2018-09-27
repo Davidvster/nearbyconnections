@@ -14,6 +14,7 @@ import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.ui.chat.ChatAdapter
 import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_host_chat.*
+import java.text.SimpleDateFormat
 import java.util.Date
 
 class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View {
@@ -43,7 +44,9 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
 
         chat_send.setOnClickListener {
             if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
-                val chatMessage = ChatMessage(username, chat_input.text.toString(), Date().toString(), cardColor)
+                val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
+                val formattedDate = format.format(Date())
+                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor)
                 presenter.sendMessage(Gson().toJson(chatMessage))
                 presenter.addMessage(Pair(chatMessage, 1))
             }
