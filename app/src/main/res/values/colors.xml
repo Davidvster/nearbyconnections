@@ -5,7 +5,7 @@
     <color name="color_accent">#ff9800</color>
 
     <color name="color_transparent">#00ffffff</color>
-    <color name="color_message_input_bg">#96fae079</color>
+    <color name="color_message_input_bg">#ffe5c0</color>
     <color name="color_message_bg">#adf1ee</color>
     <color name="color_message_bg_guest">#bde491</color>
     <color name="color_connection_bg">#ffb74d</color>
