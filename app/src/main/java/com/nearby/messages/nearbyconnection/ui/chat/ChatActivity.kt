@@ -81,7 +81,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         supportActionBar!!.title = resources.getString(R.string.chat_connect_room_title)
         presenter.startDiscovery()
         guestListMenu.isVisible = false
-
+        Toast.makeText(this, resources.getString(R.string.connection_ended), Toast.LENGTH_SHORT).show()
     }
 
     override fun setProgressVisible(visible: Boolean) {

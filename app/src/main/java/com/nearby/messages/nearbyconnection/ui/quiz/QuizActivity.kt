@@ -94,6 +94,7 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         supportActionBar!!.title = resources.getString(R.string.quiz_connect_room_title)
         presenter.startDiscovery()
         guestListMenu.isVisible = false
+        Toast.makeText(this, resources.getString(R.string.connection_ended), Toast.LENGTH_SHORT).show()
     }
 
     override fun setQuestion(question: QuizQuestion) {

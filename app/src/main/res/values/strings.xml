@@ -55,5 +55,6 @@
     <string name="dialog_color_name">#%s</string>
 
     <string name="permission_denied">A permission was denied</string>
+    <string name="connection_ended">You have been disconnected.</string>
 
 </resources>

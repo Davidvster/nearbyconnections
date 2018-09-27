@@ -176,6 +176,7 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
                 resultList.add(quizResult)
                 view?.updateQuizResult(resultList)
             }
+            currentQuizResponses = mutableListOf()
             view?.enableQuizForm(true)
         }
     }
