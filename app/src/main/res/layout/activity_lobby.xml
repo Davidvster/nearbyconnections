@@ -21,7 +21,7 @@
         android:id="@+id/lobby_user_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your nickname"
+        android:hint="@string/lobby_nickname_hint"
         android:gravity="center"
         android:maxLength="20"
         android:layout_marginLeft="10dp"
@@ -63,9 +63,10 @@
             android:id="@+id/lobby_chat_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:textStyle="bold"
             android:gravity="center"
-            android:text="Chat-Room"
+            android:layout_marginTop="10dp"
+            android:text="@string/lobby_chat_room"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
@@ -73,7 +74,7 @@
             style="@style/LobbyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Join a chat room"
+            android:text="@string/lobby_chat_room_join"
             app:layout_constraintEnd_toStartOf="@+id/lobby_chat_host"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lobby_chat_title" />
@@ -83,7 +84,7 @@
             style="@style/LobbyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Host a chat room"
+            android:text="@string/lobby_chat_room_host"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/lobby_chat_join"
             app:layout_constraintTop_toBottomOf="@+id/lobby_chat_title" />
@@ -93,8 +94,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
+            android:textStyle="bold"
             android:gravity="center"
-            android:text="Quizz-Room"
+            android:text="@string/lobby_quiz_room"
             app:layout_constraintTop_toBottomOf="@+id/lobby_chat_join" />
 
         <Button
@@ -102,7 +104,7 @@
             style="@style/LobbyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Join a quiz room"
+            android:text="@string/lobby_quiz_room_join"
             app:layout_constraintEnd_toStartOf="@+id/lobby_chat_host"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/lobby_quiz_title" />
@@ -112,7 +114,7 @@
             style="@style/LobbyButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Host a quiz room"
+            android:text="@string/lobby_quiz_room_host"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/lobby_chat_join"
             app:layout_constraintTop_toBottomOf="@+id/lobby_quiz_title" />
@@ -123,7 +125,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:text="Pick your color"
+            android:text="@string/lobby_color_pick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

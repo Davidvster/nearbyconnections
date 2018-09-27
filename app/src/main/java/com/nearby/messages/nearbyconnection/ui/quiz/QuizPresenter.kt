@@ -1,7 +1,6 @@
 package com.nearby.messages.nearbyconnection.ui.quiz
 
 import android.content.Context
-import android.util.Log
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.ConnectionInfo
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
@@ -16,6 +15,8 @@ import com.google.android.gms.nearby.connection.PayloadCallback
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate
 import com.google.android.gms.nearby.connection.Strategy
 import com.google.gson.Gson
+import com.nearby.messages.nearbyconnection.BuildConfig
+import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.Participant
@@ -44,7 +45,6 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            Log.v("SOGOVOREC", endpointId+" sent a message: "+ String(payload.asBytes()!!))
             val question = Gson().fromJson(String(payload.asBytes()!!), QuizQuestion::class.java)
             if (question.question != null && question.answerA != null && question.answerB != null && question.answerC != null && question.answerD != null) {
                 view?.setQuestion(question)
@@ -58,7 +58,6 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
                     val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
                     if (guests.participants != null) {
                         guestList = guests.participants
-//                        view?.setParticipantsList(guests.participants)
                     }
                 }
             }
@@ -69,7 +68,6 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
 
     private val endpointDiscoveryCallback = object : EndpointDiscoveryCallback() {
         override fun onEndpointFound(endpointId: String, discoveredEndpointInfo: DiscoveredEndpointInfo) {
-            Log.v("SOGOVOREC", "An endpoint was found: " + endpointId)
             if (!connected) {
                 availableGuests[endpointId] = discoveredEndpointInfo.endpointName
                 view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
@@ -79,7 +77,6 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
         override fun onEndpointLost(endpointId: String) {
             availableGuests.remove(endpointId)
             view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
-            Log.v("SOGOVOREC", "A previously discovered endpoint has gone away. " + endpointId)
             if (connectingTo == endpointId) {
                 view?.setProgressVisible(false)
             }
@@ -99,35 +96,32 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
                     stopDiscovery()
                     hostEndpointId = endpointId
                     connected = true
-                    view?.setToolbarTitle(availableGuests[endpointId]!! + " Quiz-Room")
+                    view?.setToolbarTitle(context.resources.getString(R.string.quiz_room_title, availableGuests[endpointId]!!))
                     view?.setQuizRoom()
-                    Log.v("SOGOVOREC1", "We're connected! Can now start sending and receiving data. " + endpointId)
                 }
                 ConnectionsStatusCodes.STATUS_CONNECTION_REJECTED -> {
                     connected = false
                     view?.setProgressVisible(false)
-                    Log.v("SOGOVOREC2", "We're rejected by " + endpointId)
                 }
                 ConnectionsStatusCodes.STATUS_ERROR -> {
                     connected = false
                     view?.setProgressVisible(false)
-                    Log.v("SOGOVOREC3", "The connection broke before it was able to be accepted. " + endpointId)
                 }
             }
         }
 
         override fun onDisconnected(endpointId: String) {
-            Log.v("SOGOVOREC", "We've been disconnected from this endpoint. " + endpointId)
             availableGuests = HashMap()
             hostEndpointId = ""
             connected = false
+            resultList = mutableListOf()
             view?.setConnectionRoom()
         }
     }
 
     override fun init(username: String, packageName: String, colorCard: Int) {
         this.username = username
-        this.packageName = packageName +".quiz"
+        this.packageName = packageName + BuildConfig.QUIZ_ID
         this.cardColor = colorCard
         connectionsClient = Nearby.getConnectionsClient(context)
     }
@@ -136,16 +130,13 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
         val quizResponse = QuizResponse(response, Date().time - dateReceived.time)
         val dataToSend = Gson().toJson(quizResponse)
         connectionsClient.sendPayload(hostEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
-//        }
     }
 
     override fun stopDiscovery() {
-        Log.v("POVEZAVA", "stopped discovery")
         connectionsClient.stopDiscovery()
     }
 
     override fun startDiscovery() {
-        Log.v("POVEZAVA", "started discovery")
         connectionsClient.startDiscovery(
                 packageName, endpointDiscoveryCallback, DiscoveryOptions.Builder().setStrategy(Strategy.P2P_CLUSTER).build())
     }

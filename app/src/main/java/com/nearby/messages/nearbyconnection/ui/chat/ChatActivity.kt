@@ -29,7 +29,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         presenter = ChatPresenter(this)
         setContentView(R.layout.activity_chat)
 
-        title = "Connect to a Chat Room"
+        title = resources.getString(R.string.chat_connect_room_title)
         setSupportActionBar(chat_toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
@@ -49,10 +49,8 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         chat_content.adapter = chatAdapter
 
         connectionAdapter.onRoomClicked =  {
-//            presenter.stopDiscovery()
             setProgressVisible(true)
             presenter.requestConnection(it)
-//            ChatActivity.start(this, connection_user.text.toString())
         }
 
         chat_send.setOnClickListener {
@@ -80,7 +78,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         chat_room_layout.visibility = View.GONE
         connection_layout.visibility = View.VISIBLE
         chatAdapter.messagesList = mutableListOf()
-        supportActionBar!!.title = "Connect to a Chat Room"
+        supportActionBar!!.title = resources.getString(R.string.chat_connect_room_title)
         presenter.startDiscovery()
         guestListMenu.isVisible = false
 
@@ -133,10 +131,10 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
                             .setPositiveButton { dialog ->
                                 dialog.dismiss()
                             }
-                            .setTitleText("Chat-room host: " + presenter.getHostUsername())
+                            .setTitleText(resources.getString(R.string.chat_guest_list_room_host, presenter.getHostUsername()))
                             .show()
                 } else{
-                    Toast.makeText(this, resources.getString(R.string.only_two_participants), Toast.LENGTH_LONG)
+                    Toast.makeText(this, resources.getString(R.string.guest_list_only_two_participants), Toast.LENGTH_LONG).show()
                 }
             }
         }

@@ -22,7 +22,6 @@ import com.nearby.messages.nearbyconnection.ui.views.CustomFlag
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
-
 class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
 
     private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -91,17 +90,17 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
 
         lobby_color_select.setOnClickListener {
             val builder = ColorPickerDialog.Builder(this, AlertDialog.THEME_DEVICE_DEFAULT_LIGHT)
-            builder.setTitle("Pick your color")
+            builder.setTitle(resources.getString(R.string.dialog_color_title))
             builder.setFlagView(CustomFlag(this, R.layout.dialog_layout_flag))
-            builder.setPositiveButton(getString(R.string.color_confirm), ColorEnvelopeListener { envelope, fromUser -> cardColor = envelope.color })
-            builder.setNegativeButton(getString(R.string.color_cancel), DialogInterface.OnClickListener { dialogInterface, i -> dialogInterface.dismiss() })
+            builder.setPositiveButton(getString(R.string.dialog_color_confirm), ColorEnvelopeListener { envelope, fromUser -> cardColor = envelope.color })
+            builder.setNegativeButton(getString(R.string.dialog_color_cancel), DialogInterface.OnClickListener { dialogInterface, i -> dialogInterface.dismiss() })
             builder.show()
         }
     }
 
     private fun checkInputName(): Boolean {
         if (lobby_user_name.text.toString().isNullOrEmpty() || lobby_user_name.text.toString() == "") {
-            lobby_user_name_error.text = "Please insert an username!"
+            lobby_user_name_error.text = resources.getString(R.string.lobby_empty_username)
             lobby_user_name_error.visibility = View.VISIBLE
             if (android.os.Build.VERSION.SDK_INT >= 21) {
                 lobby_user_name.backgroundTintList = ColorStateList.valueOf( Color.RED )
@@ -109,7 +108,7 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
             return false
         }
         if (lobby_user_name.text.toString().replace("\\s".toRegex(), "").isEmpty()) {
-            lobby_user_name_error.text = "Please insert a valid username!"
+            lobby_user_name_error.text = resources.getString(R.string.lobby_invalid_username)
             lobby_user_name_error.visibility = View.VISIBLE
             if (android.os.Build.VERSION.SDK_INT >= 21) {
                 lobby_user_name.backgroundTintList = ColorStateList.valueOf( Color.RED )
@@ -122,7 +121,9 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
     override fun onStart() {
         super.onStart()
         if (!hasPermissions(this, *REQUIRED_PERMISSIONS)) {
-            requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS)
+            if (android.os.Build.VERSION.SDK_INT >= 23) {
+                requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_REQUIRED_PERMISSIONS)
+            }
         }
     }
 
@@ -145,7 +146,7 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
 
         for (grantResult in grantResults) {
             if (grantResult == PackageManager.PERMISSION_DENIED) {
-                Toast.makeText(this, "A permission was denied", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, resources.getString(R.string.permission_denied), Toast.LENGTH_LONG).show()
                 finish()
                 return
             }

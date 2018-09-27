@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.EditText
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.QuizQuestion
@@ -19,6 +18,7 @@ import com.nearby.messages.nearbyconnection.data.model.QuizResult
 import com.nearby.messages.nearbyconnection.ui.quiz.QuizAdapter
 import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_host_quiz.*
+
 class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View {
 
     private lateinit var username: String
@@ -50,16 +50,6 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
             if (checkQuizInput()) {
                 val question = QuizQuestion(quiz_input_question.text.toString(), quiz_input_answer_a.text.toString(), quiz_input_answer_b.text.toString(), quiz_input_answer_c.text.toString(), quiz_input_answer_d.text.toString())
                 presenter.sendQuestion(question, correctAnswer)
-                quiz_input_question.text = null
-                quiz_input_answer_a.text = null
-                quiz_input_answer_b.text = null
-                quiz_input_answer_c.text = null
-                quiz_input_answer_d.text = null
-                correctAnswer = 1
-                quiz_radio_answer_a.isChecked = true
-                quiz_radio_answer_b.isChecked = false
-                quiz_radio_answer_c.isChecked = false
-                quiz_radio_answer_d.isChecked = false
             }
         }
 
@@ -76,14 +66,40 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
         }
     }
 
-    override fun showConnectionDialog(user: String, endpointId: String) {
+    override fun enableQuizForm(enabled: Boolean) {
+        runOnUiThread {
+            quiz_input_question.isEnabled = enabled
+            quiz_input_answer_a.isEnabled = enabled
+            quiz_radio_answer_a.isEnabled = enabled
+            quiz_input_answer_b.isEnabled = enabled
+            quiz_radio_answer_b.isEnabled = enabled
+            quiz_input_answer_c.isEnabled = enabled
+            quiz_radio_answer_c.isEnabled = enabled
+            quiz_input_answer_d.isEnabled = enabled
+            quiz_radio_answer_d.isEnabled = enabled
+            if (enabled) {
+                quiz_input_question.text = null
+                quiz_input_answer_a.text = null
+                quiz_input_answer_b.text = null
+                quiz_input_answer_c.text = null
+                quiz_input_answer_d.text = null
+                correctAnswer = 1
+                quiz_radio_answer_a.isChecked = true
+                quiz_radio_answer_b.isChecked = false
+                quiz_radio_answer_c.isChecked = false
+                quiz_radio_answer_d.isChecked = false
+            }
+        }
+    }
+
+    override fun showJoinDialog(user: String, endpointId: String) {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Connection found")
-        builder.setMessage(user+ " wants to connect to you!")
-        builder.setPositiveButton("Accept") { dialog, which ->
+        builder.setTitle(resources.getString(R.string.dialog_request_title))
+        builder.setMessage(resources.getString(R.string.dialog_request_description, user ))
+        builder.setPositiveButton(resources.getString(R.string.dialog_request_accept)) { _, _ ->
             presenter.acceptConnection(user, endpointId)
         }
-        builder.setNegativeButton("Reject") { dialog, which ->
+        builder.setNegativeButton(resources.getString(R.string.dialog_request_reject)) { _, _ ->
             presenter.rejectConnection(endpointId)
         }
         builder.setOnDismissListener { presenter.rejectConnection(endpointId) }
@@ -193,7 +209,7 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
                             .setPositiveButton { dialog ->
                                 dialog.dismiss()
                             }
-                            .setTitleText("Hosting a Quiz-Room")
+                            .setTitleText(resources.getString(R.string.quiz_host_room_title))
                             .show()
                 }
             }

@@ -1,7 +1,59 @@
 <resources>
-    <string name="app_name">NearbyConnection</string>
-    <string name="color_cancel">Cancel</string>
-    <string name="color_confirm">Ok</string>
-    <string name="dialog_guest_participant">Participants in this room:</string>
-    <string name="only_two_participants">There are only you and the host in this room.</string>
+    <string name="app_name">Chat Quiz Room</string>
+
+    <string name="guest_list_dialog_guest_participant">Participants in this room:</string>
+    <string name="guest_list_only_two_participants">There are only you and the host in this room.</string>
+
+    <string name="chat_connect_room_title">Connect to a Chat Room</string>
+    <string name="chat_host_room_title">Hosting a Chat-Room</string>
+    <string name="chat_guest_list_room_host">Chat-room host: %s</string>
+    <string name="chat_room_title">%s Chat-Room</string>
+    <string name="chat_message_input_hint">Enter message to send</string>
+
+    <string name="quiz_connect_room_title">Connect to a Quiz Room</string>
+    <string name="quiz_host_room_title">Hosting a Quiz-Room</string>
+    <string name="quiz_winner_text_others">This round winner is: %s responded in %s %s!</string>
+    <string name="quiz_winner_text_winner">Congratulations you won, you responded in %s %s!</string>
+    <string name="quiz_winner_text_no_winner">There are no winners for this round!</string>
+    <string name="quiz_guest_list_room_host">Quiz-room host: %s</string>
+    <string name="quiz_room_title">%s Quiz-Room</string>
+    <string name="quiz_points_list">%s currently has %s %s</string>
+    <string name="quiz_points">Points:\n%s</string>
+    <string name="quiz_input_question">Insert the question</string>
+    <string name="quiz_input_answer_a">Answer A</string>
+    <string name="quiz_input_answer_b">Answer B</string>
+    <string name="quiz_input_answer_c">Answer C</string>
+    <string name="quiz_input_answer_d">Answer D</string>
+    <plurals name="points">
+        <item quantity="one">point</item>
+        <item quantity="other">points</item>
+    </plurals>
+    <plurals name="seconds">
+        <item quantity="one">second</item>
+        <item quantity="other">seconds</item>
+    </plurals>
+
+    <string name="dialog_request_title">Join request</string>
+    <string name="dialog_request_description">%s  wants to join your room!</string>
+    <string name="dialog_request_accept">Accept</string>
+    <string name="dialog_request_reject">Reject</string>
+
+    <string name="lobby_empty_username">Please insert an username!</string>
+    <string name="lobby_invalid_username">Please insert a valid username!</string>
+    <string name="lobby_nickname_hint">Enter your nickname</string>
+    <string name="lobby_chat_room">Chat-Room</string>
+    <string name="lobby_chat_room_join">Join a chat room</string>
+    <string name="lobby_chat_room_host">Host a chat room</string>
+    <string name="lobby_quiz_room">Quiz-Room</string>
+    <string name="lobby_quiz_room_join">Join a quiz room</string>
+    <string name="lobby_quiz_room_host">Host a quiz room</string>
+    <string name="lobby_color_pick">Pick your color</string>
+
+    <string name="dialog_color_confirm">OK</string>
+    <string name="dialog_color_cancel">Cancel</string>
+    <string name="dialog_color_title">Pick your color</string>
+    <string name="dialog_color_name">#%s</string>
+
+    <string name="permission_denied">A permission was denied</string>
+
 </resources>

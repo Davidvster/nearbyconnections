@@ -7,19 +7,13 @@ import android.widget.TextView
 import com.nearby.messages.nearbyconnection.R
 import com.skydoves.colorpickerview.flag.FlagView
 
-
 class CustomFlag(context: Context, layout: Int) : FlagView(context, layout) {
 
-    private val textView: TextView
-    private val alphaTileView: AlphaTileView
-
-    init {
-        textView = findViewById(R.id.flag_color_code)
-        alphaTileView = findViewById(R.id.flag_color_layout)
-    }
+    private val textView: TextView = findViewById(R.id.flag_color_code)
+    private val alphaTileView: AlphaTileView = findViewById(R.id.flag_color_layout)
 
     override fun onRefresh(colorEnvelope: ColorEnvelope) {
-        textView.text = "#" + colorEnvelope.hexCode
+        textView.text = context.resources.getString(R.string.dialog_color_name, colorEnvelope.hexCode)
         alphaTileView.setPaintColor(colorEnvelope.color)
     }
 }

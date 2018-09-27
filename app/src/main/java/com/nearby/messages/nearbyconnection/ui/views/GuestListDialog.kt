@@ -1,6 +1,5 @@
 package com.nearby.messages.nearbyconnection.ui.views
 
-import android.support.annotation.StringRes
 import android.support.v7.app.AppCompatDialog
 import android.view.View
 import android.content.Context
@@ -26,11 +25,6 @@ class GuestListDialog(context: Context) : AppCompatDialog(context) {
         guestListAdapter.guestList = guestList
         dialog_guest_list.layoutManager = LinearLayoutManager(context)
         dialog_guest_list.adapter = guestListAdapter
-        return this
-    }
-
-    fun setTitleText(@StringRes title: Int): GuestListDialog {
-        dialog_guest_owner.text = context.getString(title)
         return this
     }
 

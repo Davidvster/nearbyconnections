@@ -38,11 +38,10 @@ class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatA
             holder.itemView.findViewById<TextView>(R.id.message_content_message).text = message.message
             val parser = SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy")
             val date = parser.parse(message.date)
-            val format = SimpleDateFormat("HH:mm:ss d.MM.yyyy")
-            val formatedDate = format.format(date)
-            holder.itemView.findViewById<TextView>(R.id.message_content_date).text = formatedDate.toString()
+            val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
+            val formattedDate = format.format(date)
+            holder.itemView.findViewById<TextView>(R.id.message_content_date).text = formattedDate.toString()
             holder.itemView.findViewById<CardView>(R.id.message_content_user_card).setCardBackgroundColor(message.color)
-
         }
     }
 

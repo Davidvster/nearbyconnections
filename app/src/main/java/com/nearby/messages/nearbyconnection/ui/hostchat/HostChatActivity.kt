@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import com.google.gson.Gson
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
@@ -51,14 +50,14 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         }
     }
 
-    override fun showConnectionDialog(user: String, endpointId: String) {
+    override fun showJoinDialog(user: String, endpointId: String) {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Connection found")
-        builder.setMessage(user + " wants to connect to you!")
-        builder.setPositiveButton("Accept") { dialog, which ->
+        builder.setTitle(resources.getString(R.string.dialog_request_title))
+        builder.setMessage(resources.getString(R.string.dialog_request_description, user ))
+        builder.setPositiveButton(resources.getString(R.string.dialog_request_accept)) { _, _ ->
             presenter.acceptConnection(user, endpointId)
         }
-        builder.setNegativeButton("Reject") { dialog, which ->
+        builder.setNegativeButton(resources.getString(R.string.dialog_request_reject)) { _, _ ->
             presenter.rejectConnection(endpointId)
         }
         builder.setOnDismissListener { presenter.rejectConnection(endpointId) }
@@ -90,7 +89,7 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
                             .setPositiveButton { dialog ->
                                 dialog.dismiss()
                             }
-                            .setTitleText("Hosting a Chat-Room")
+                            .setTitleText(resources.getString(R.string.chat_host_room_title))
                             .show()
                 }
             }

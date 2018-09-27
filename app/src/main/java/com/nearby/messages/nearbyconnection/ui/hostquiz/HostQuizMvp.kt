@@ -6,8 +6,9 @@ import com.nearby.messages.nearbyconnection.data.model.QuizResult
 
 interface HostQuizMvp : BaseMvp {
     interface View : BaseMvp.View {
-        fun showConnectionDialog(user: String, endpointId: String)
+        fun showJoinDialog(user: String, endpointId: String)
         fun updateQuizResult(resultList: MutableList<QuizResult>)
+        fun enableQuizForm(visible: Boolean)
     }
 
     interface Presenter : BaseMvp.Presenter {

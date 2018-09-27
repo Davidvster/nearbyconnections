@@ -15,6 +15,8 @@ import com.nearby.messages.nearbyconnection.data.model.QuizResult
 import com.nearby.messages.nearbyconnection.ui.chat.ConnectionAdapter
 import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_quiz.*
+import android.animation.ValueAnimator
+import android.view.animation.LinearInterpolator
 
 class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
 
@@ -30,7 +32,7 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         presenter = QuizPresenter(this)
         setContentView(R.layout.activity_quiz)
         
-        title = "Connect to a Quiz Room"
+        title = resources.getString(R.string.quiz_connect_room_title)
         setSupportActionBar(quiz_toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
@@ -89,7 +91,7 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         connection_layout.visibility = View.VISIBLE
         quizAdapter.resultList = mutableListOf()
         quizAdapter.notifyDataSetChanged()
-        supportActionBar!!.title = "Connect to a Quiz Room"
+        supportActionBar!!.title = resources.getString(R.string.quiz_connect_room_title)
         presenter.startDiscovery()
         guestListMenu.isVisible = false
     }
@@ -101,6 +103,14 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         quiz_answer_c.text = question.answerC
         quiz_answer_d.text = question.answerD
         quiz_answer_layout.visibility = View.VISIBLE
+        quiz_timer_layout.visibility = View.VISIBLE
+        val animator = ValueAnimator.ofInt(60, 0)
+        animator.interpolator = LinearInterpolator()
+        animator.duration = 60000
+        animator.addUpdateListener { animation ->
+            quiz_timer.text = animation.animatedValue.toString()
+        }
+        animator.start()
     }
 
     override fun setProgressVisible(visible: Boolean) {
@@ -117,6 +127,7 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         quizAdapter.resultList = resultList
         quizAdapter.notifyItemInserted(resultList.size-1)
         quiz_answer_layout.visibility = View.GONE
+        quiz_timer_layout.visibility = View.GONE
         quiz_content.scrollToPosition(resultList.size -1)
     }
 
@@ -150,10 +161,10 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
                             .setPositiveButton { dialog ->
                                 dialog.dismiss()
                             }
-                            .setTitleText("Quiz-room host: " + presenter.getHostUsername())
+                            .setTitleText(resources.getString(R.string.quiz_guest_list_room_host, presenter.getHostUsername()))
                             .show()
                 } else{
-                    Toast.makeText(this, resources.getString(R.string.only_two_participants), Toast.LENGTH_LONG)
+                    Toast.makeText(this, resources.getString(R.string.guest_list_only_two_participants), Toast.LENGTH_LONG).show()
                 }
             }
         }
