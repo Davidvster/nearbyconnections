@@ -5,12 +5,13 @@ import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 
 interface ChatMvp : BaseMvp {
     interface View : BaseMvp.View {
-        fun updateConnectionList(availableRooms: MutableList<Pair<String, String>>)
+        fun updateConnectionList(availableRooms: List<Pair<String, String>>)
         fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>)
         fun setChatRoom()
         fun setConnectionRoom()
         fun setProgressVisible(visible: Boolean)
-        fun setToolbarTitle(title: String)
+        fun setToolbarTitle(roomTitle: String)
+        fun stopRefreshConnectionList()
     }
 
     interface Presenter : BaseMvp.Presenter {
@@ -25,5 +26,6 @@ interface ChatMvp : BaseMvp {
         fun isConnected(): Boolean
         fun getGuestList(): List<String>
         fun getHostUsername(): String
+        fun refreshConnectionList()
     }
 }

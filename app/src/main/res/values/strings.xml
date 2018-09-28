@@ -5,12 +5,14 @@
     <string name="guest_list_only_two_participants">There are only you and the host in this room.</string>
 
     <string name="chat_connect_room_title">Connect to a Chat Room</string>
+    <string name="chat_connect_search">Searching for available chat rooms&#8230;</string>
     <string name="chat_host_room_title">Hosting a Chat-Room</string>
     <string name="chat_guest_list_room_host">Chat-room host: %s</string>
     <string name="chat_room_title">%s Chat-Room</string>
     <string name="chat_message_input_hint">Enter message to send</string>
 
     <string name="quiz_connect_room_title">Connect to a Quiz Room</string>
+    <string name="quiz_connect_search">Searching for available quiz rooms&#8230;</string>
     <string name="quiz_host_room_title">Hosting a Quiz-Room</string>
     <string name="quiz_winner_text_others">This round winner is: %s responded in %s %s!</string>
     <string name="quiz_winner_text_winner">Congratulations you won, you responded in %s %s!</string>
@@ -24,6 +26,7 @@
     <string name="quiz_input_answer_b">Answer B</string>
     <string name="quiz_input_answer_c">Answer C</string>
     <string name="quiz_input_answer_d">Answer D</string>
+
     <plurals name="points">
         <item quantity="one">point</item>
         <item quantity="other">points</item>

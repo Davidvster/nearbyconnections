@@ -16,6 +16,7 @@ import com.nearby.messages.nearbyconnection.ui.chat.ConnectionAdapter
 import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_quiz.*
 import android.animation.ValueAnimator
+import android.support.design.widget.Snackbar
 import android.view.animation.LinearInterpolator
 
 class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
@@ -72,6 +73,17 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
             presenter.sendAnswer(4)
             quiz_answer_layout.visibility = View.GONE
         }
+
+        connection_content_refresh.setOnRefreshListener {
+            connection_content_refresh.isRefreshing = true
+            presenter.refreshConnectionList()
+        }
+    }
+
+    override fun stopRefreshConnectionList() {
+        connection_content_refresh.isRefreshing = false
+        quiz_connect_search.visibility = View.VISIBLE
+        presenter.startDiscovery()
     }
 
     override fun setToolbarTitle(newTitle: String) {
@@ -89,12 +101,13 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         setProgressVisible(false)
         quiz_room_layout.visibility = View.GONE
         connection_layout.visibility = View.VISIBLE
+        quiz_connect_search.visibility = View.VISIBLE
         quizAdapter.resultList = mutableListOf()
         quizAdapter.notifyDataSetChanged()
         supportActionBar!!.title = resources.getString(R.string.quiz_connect_room_title)
         presenter.startDiscovery()
         guestListMenu.isVisible = false
-        Toast.makeText(this, resources.getString(R.string.connection_ended), Toast.LENGTH_SHORT).show()
+        Snackbar.make(connection_layout, resources.getString(R.string.connection_ended), Snackbar.LENGTH_SHORT).show()
     }
 
     override fun setQuestion(question: QuizQuestion) {
@@ -132,7 +145,12 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         quiz_content.scrollToPosition(resultList.size -1)
     }
 
-    override fun updateConnectionList(availableRooms: MutableList<Pair<String, String>>) {
+    override fun updateConnectionList(availableRooms: List<Pair<String, String>>) {
+        if (availableRooms.isEmpty()) {
+            quiz_connect_search.visibility = View.VISIBLE
+        } else {
+            quiz_connect_search.visibility = View.GONE
+        }
         connectionAdapter.connectionList = availableRooms
         connectionAdapter.notifyDataSetChanged()
     }

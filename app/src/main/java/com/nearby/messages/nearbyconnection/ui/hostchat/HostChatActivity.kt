@@ -69,7 +69,7 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
     }
 
     override fun setMessages(messageList: List<Pair<ChatMessage, Int>>) {
-        chatAdapter.messagesList = messageList.toMutableList()
+        chatAdapter.messagesList = messageList
         chatAdapter.notifyItemInserted(messageList.size-1)
         chat_input.text = null
         chat_content.scrollToPosition(messageList.size - 1)

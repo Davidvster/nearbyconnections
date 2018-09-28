@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.element_connection.view.*
 
 class ConnectionAdapter constructor(val context: Context) : RecyclerView.Adapter<ConnectionAdapter.ViewHolder>() {
 
-    var connectionList = mutableListOf<Pair<String, String>>()
+    var connectionList = listOf<Pair<String, String>>()
 
     var onRoomClicked: ((endpointId: String) -> Unit)? = null
 

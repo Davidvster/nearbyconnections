@@ -14,7 +14,7 @@ import java.text.SimpleDateFormat
 
 class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
-    var messagesList = mutableListOf<Pair<ChatMessage, Int>>()
+    var messagesList = listOf<Pair<ChatMessage, Int>>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatAdapter.ViewHolder {
         when (viewType) {
@@ -36,10 +36,6 @@ class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatA
         messagesList[holder.adapterPosition].first.let { message ->
             holder.itemView.findViewById<TextView>(R.id.message_content_user).text = message.user
             holder.itemView.findViewById<TextView>(R.id.message_content_message).text = message.message
-//            val parser = SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy")
-//            val date = parser.parse(message.date)
-//            val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
-//            val formattedDate = format.format(date)
             holder.itemView.findViewById<TextView>(R.id.message_content_date).text = message.date
             holder.itemView.findViewById<CardView>(R.id.message_content_user_card).setCardBackgroundColor(message.color)
         }

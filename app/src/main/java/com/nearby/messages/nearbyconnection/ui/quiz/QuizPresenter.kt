@@ -70,13 +70,13 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
         override fun onEndpointFound(endpointId: String, discoveredEndpointInfo: DiscoveredEndpointInfo) {
             if (!connected) {
                 availableGuests[endpointId] = discoveredEndpointInfo.endpointName
-                view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
+                view?.updateConnectionList(availableGuests.toList())
             }
         }
 
         override fun onEndpointLost(endpointId: String) {
             availableGuests.remove(endpointId)
-            view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
+            view?.updateConnectionList(availableGuests.toList())
             if (connectingTo == endpointId) {
                 view?.setProgressVisible(false)
             }
@@ -112,9 +112,11 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
 
         override fun onDisconnected(endpointId: String) {
             availableGuests = HashMap()
+            view?.updateConnectionList(availableGuests.toList())
             hostEndpointId = ""
             connected = false
             resultList = mutableListOf()
+            stopDiscovery()
             view?.setConnectionRoom()
         }
     }
@@ -171,5 +173,12 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
 
     override fun getHostUsername(): String {
         return availableGuests[hostEndpointId]?: ""
+    }
+
+    override fun refreshConnectionList() {
+        stopDiscovery()
+        availableGuests = HashMap()
+        view?.updateConnectionList(availableGuests.toList())
+        view?.stopRefreshConnectionList()
     }
 }

@@ -10,9 +10,10 @@ interface QuizMvp : BaseMvp {
         fun setQuizRoom()
         fun setToolbarTitle(newTitle: String)
         fun setProgressVisible(visible: Boolean)
-        fun updateConnectionList(availableRooms: MutableList<Pair<String, String>>)
+        fun updateConnectionList(availableRooms: List<Pair<String, String>>)
         fun setQuestion(question: QuizQuestion)
         fun updateQuizResult(resultList: MutableList<QuizResult>)
+        fun stopRefreshConnectionList()
     }
 
     interface Presenter : BaseMvp.Presenter {
@@ -27,5 +28,6 @@ interface QuizMvp : BaseMvp {
         fun sendAnswer(response: Int)
         fun getGuestList(): List<String>
         fun getHostUsername(): String
+        fun refreshConnectionList()
     }
 }

@@ -61,13 +61,13 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         override fun onEndpointFound(endpointId: String, discoveredEndpointInfo: DiscoveredEndpointInfo) {
             if (!connected) {
                 availableGuests[endpointId] = discoveredEndpointInfo.endpointName
-                view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
+                view?.updateConnectionList(availableGuests.toList())
             }
         }
 
         override fun onEndpointLost(endpointId: String) {
             availableGuests.remove(endpointId)
-            view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
+            view?.updateConnectionList(availableGuests.toList())
         }
     }
 
@@ -100,11 +100,11 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
         override fun onDisconnected(endpointId: String) {
             availableGuests = HashMap()
+            view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
             hostEndpointId = ""
-            stopDiscovery()
-            startDiscovery()
             connected = false
             messageList = mutableListOf()
+            stopDiscovery()
             view?.setConnectionRoom()
         }
     }
@@ -163,5 +163,12 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
     override fun getHostUsername(): String {
         return availableGuests[hostEndpointId]?: ""
+    }
+
+    override fun refreshConnectionList() {
+        stopDiscovery()
+        availableGuests = HashMap()
+        view?.updateConnectionList(availableGuests.toList())
+        view?.stopRefreshConnectionList()
     }
 }

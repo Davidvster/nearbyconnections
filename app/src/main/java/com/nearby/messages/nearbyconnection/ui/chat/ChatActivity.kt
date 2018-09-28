@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
@@ -60,10 +61,21 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
                 presenter.addMessage(Pair(chatMessage, 1))
             }
         }
+
+        connection_content_refresh.setOnRefreshListener {
+            connection_content_refresh.isRefreshing = true
+            presenter.refreshConnectionList()
+        }
     }
 
-    override fun setToolbarTitle(newTitle: String) {
-        supportActionBar!!.title = newTitle
+    override fun stopRefreshConnectionList() {
+        connection_content_refresh.isRefreshing = false
+        chat_connect_search.visibility = View.VISIBLE
+        presenter.startDiscovery()
+    }
+
+    override fun setToolbarTitle(roomTitle: String) {
+        supportActionBar!!.title = roomTitle
     }
 
     override fun setChatRoom() {
@@ -77,11 +89,12 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         setProgressVisible(false)
         chat_room_layout.visibility = View.GONE
         connection_layout.visibility = View.VISIBLE
+        chat_connect_search.visibility = View.VISIBLE
         chatAdapter.messagesList = mutableListOf()
         supportActionBar!!.title = resources.getString(R.string.chat_connect_room_title)
         presenter.startDiscovery()
         guestListMenu.isVisible = false
-        Toast.makeText(this, resources.getString(R.string.connection_ended), Toast.LENGTH_SHORT).show()
+        Snackbar.make(connection_layout, resources.getString(R.string.connection_ended), Snackbar.LENGTH_SHORT).show()
     }
 
     override fun setProgressVisible(visible: Boolean) {
@@ -94,13 +107,18 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         }
     }
 
-    override fun updateConnectionList(availableRooms: MutableList<Pair<String, String>>) {
+    override fun updateConnectionList(availableRooms: List<Pair<String, String>>) {
+        if (availableRooms.isEmpty()) {
+            chat_connect_search.visibility = View.VISIBLE
+        } else {
+            chat_connect_search.visibility = View.GONE
+        }
         connectionAdapter.connectionList = availableRooms
         connectionAdapter.notifyDataSetChanged()
     }
 
     override fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>) {
-        chatAdapter.messagesList = messageList.toMutableList()
+        chatAdapter.messagesList = messageList
         chatAdapter.notifyItemInserted(messageList.size-1)
         chat_input.text = null
         chat_content.scrollToPosition(messageList.size - 1)
@@ -170,5 +188,4 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
             context.startActivity(intent)
         }
     }
-
 }
