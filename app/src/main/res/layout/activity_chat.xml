@@ -83,7 +83,7 @@
         android:background="@color/chat_bg"
         app:layout_constraintTop_toBottomOf="@+id/chat_toolbar_layout"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:visibility="gone">
+        tools:visibility="visible">
 
 
         <android.support.v7.widget.RecyclerView
@@ -128,7 +128,7 @@
             android:id="@+id/chat_send"
             android:layout_width="60dp"
             android:layout_height="46dp"
-            app:cardCornerRadius="21dp"
+            app:cardCornerRadius="23dp"
             app:cardBackgroundColor="@color/color_accent"
             android:elevation="5dp"
             android:layout_marginBottom="6dp"
@@ -146,6 +146,29 @@
                 android:paddingStart="4dp"
                 android:paddingLeft="4dp"
                 android:src="@drawable/ic_send"/>
+
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/chat_add"
+            android:layout_width="42dp"
+            android:layout_height="42dp"
+            app:cardCornerRadius="21dp"
+            app:cardBackgroundColor="@color/color_primary"
+            android:elevation="5dp"
+            android:layout_marginBottom="3dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginEnd="6dp"
+            app:layout_constraintBottom_toTopOf="@+id/chat_send"
+            app:layout_constraintEnd_toEndOf="parent" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_gallery"/>
 
         </android.support.v7.widget.CardView>
 

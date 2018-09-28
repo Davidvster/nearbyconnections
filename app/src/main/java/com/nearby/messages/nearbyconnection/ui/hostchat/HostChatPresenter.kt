@@ -19,6 +19,8 @@ import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.data.model.Guest
 import com.nearby.messages.nearbyconnection.data.model.Participant
+import android.support.v4.util.SimpleArrayMap
+
 
 class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val context: Context = AppModule.application) : BasePresenter<HostChatMvp.View>(hostChatView), HostChatMvp.Presenter {
 
@@ -31,13 +33,41 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
     private var username = ""
     private var cardColor = -1
 
+    private val incomingPayloads = SimpleArrayMap<Long, Payload>()
+    private val filePayloadReference = SimpleArrayMap<Long, Int>()
+
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            val chatMessage = Gson().fromJson(String(payload.asBytes()!!), ChatMessage::class.java)
-            addMessage(Pair(chatMessage, 2))
-            sendMessage(String(payload.asBytes()!!), endpointId)
+            if (payload.type == Payload.Type.BYTES) {
+                val chatMessage = Gson().fromJson(String(payload.asBytes()!!), ChatMessage::class.java)
+                if (chatMessage.type == 1) {
+                    addMessage(Pair(chatMessage, 2))
+                    sendMessage(String(payload.asBytes()!!), endpointId)
+                } else {
+                    filePayloadReference.put(chatMessage.message.toLong(), messageList.size)
+                    addMessage(Pair(chatMessage, 2))
+                    sendMessage(String(payload.asBytes()!!), endpointId)
+                }
+            } else if (payload.type == Payload.Type.FILE) {
+                incomingPayloads.put(payload.id, payload)
+            }
         }
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
+            if (update.status == PayloadTransferUpdate.Status.SUCCESS) {
+                val payloadId = update.payloadId
+                val payload = incomingPayloads.remove(payloadId)
+                if (payload != null && payload.type == Payload.Type.FILE) {
+                    val payloadFile = payload.asFile()!!.asJavaFile()
+
+//                    val newFilename = DateTime.now().toString()
+
+                    val imageMessage = ChatMessage(messageList[filePayloadReference[payloadId]!!].first.user, messageList[filePayloadReference[payloadId]!!].first.message, messageList[filePayloadReference[payloadId]!!].first.date, messageList[filePayloadReference[payloadId]!!].first.color, 2)
+                    imageMessage.picture = payloadFile
+                    messageList[filePayloadReference[payloadId]!!] = Pair(imageMessage, 2)
+                    view?.updateMessageList(messageList, filePayloadReference[payloadId]!!)
+//                    payloadFile!!.renameTo(File(payloadFile.parentFile, newFilename))
+                }
+            }
         }
     }
 
@@ -92,13 +122,21 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
 
     override fun addMessage(message: Pair<ChatMessage, Int>) {
         messageList.add(message)
-        view?.setMessages(messageList)
+        view?.updateMessageList(messageList)
     }
 
     override fun sendMessage(message: String, endpointId: String) {
         for (guest in guests) {
             if (guest.endpointId != endpointId) {
                 connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(message.toByteArray()))
+            }
+        }
+    }
+
+    override fun sendFile(filePayload: Payload, endpointId: String) {
+        for (guest in guests) {
+            if (guest.endpointId != endpointId) {
+                connectionsClient.sendPayload(guest.endpointId, filePayload)
             }
         }
     }

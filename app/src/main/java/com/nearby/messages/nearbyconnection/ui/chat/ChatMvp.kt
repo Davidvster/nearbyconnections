@@ -1,5 +1,6 @@
 package com.nearby.messages.nearbyconnection.ui.chat
 
+import com.google.android.gms.nearby.connection.Payload
 import com.nearby.messages.nearbyconnection.arch.BaseMvp
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 
@@ -12,6 +13,7 @@ interface ChatMvp : BaseMvp {
         fun setProgressVisible(visible: Boolean)
         fun setToolbarTitle(roomTitle: String)
         fun stopRefreshConnectionList()
+        fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>, position: Int)
     }
 
     interface Presenter : BaseMvp.Presenter {
@@ -27,5 +29,6 @@ interface ChatMvp : BaseMvp {
         fun getGuestList(): List<String>
         fun getHostUsername(): String
         fun refreshConnectionList()
+        fun sendFile(filePayload: Payload)
     }
 }

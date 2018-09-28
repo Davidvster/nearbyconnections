@@ -1,6 +1,8 @@
 package com.nearby.messages.nearbyconnection.ui.chat
 
 import android.content.Context
+import android.support.v4.util.SimpleArrayMap
+import android.util.Log
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.ConnectionInfo
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
@@ -21,6 +23,7 @@ import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.data.model.Participant
+import org.joda.time.DateTime
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -40,20 +43,47 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
     private var connected = false
 
+    private val incomingPayloads = SimpleArrayMap<Long, Payload>()
+    private val filePayloadReference = SimpleArrayMap<Long, Int>()
+
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
-            val chatMessage = Gson().fromJson(String(payload.asBytes()!!), ChatMessage::class.java)
-            if (chatMessage.user != null && chatMessage.date != null && chatMessage.message != null && chatMessage.color != null) {
-                addMessage(Pair(chatMessage, 2))
-            } else {
-                val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
-                if (guests.participants != null) {
-                    guestList = guests.participants
+            if (payload.type == Payload.Type.BYTES) {
+                val chatMessage = Gson().fromJson(String(payload.asBytes()!!), ChatMessage::class.java)
+                if (chatMessage.user != null && chatMessage.date != null && chatMessage.message != null && chatMessage.color != null) {
+                    if (chatMessage.type == 1) {
+                        addMessage(Pair(chatMessage, 2))
+                    } else {
+                        filePayloadReference.put(chatMessage.message.toLong(), messageList.size)
+                        addMessage(Pair(chatMessage, 2))
+                    }
+                } else {
+                    val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
+                    if (guests.participants != null) {
+                        guestList = guests.participants
+                    }
                 }
+            } else if (payload.type == Payload.Type.FILE) {
+                incomingPayloads.put(payload.id, payload)
             }
         }
 
         override fun onPayloadTransferUpdate(endpointId: String, update: PayloadTransferUpdate) {
+            if (update.status == PayloadTransferUpdate.Status.SUCCESS) {
+                val payloadId = update.payloadId
+                val payload = incomingPayloads.remove(payloadId)
+                if (payload != null && payload.type == Payload.Type.FILE) {
+                    val payloadFile = payload.asFile()!!.asJavaFile()
+
+//                    val newFilename = DateTime.now().toString()
+
+                    val imageMessage = ChatMessage(messageList[filePayloadReference[payloadId]!!].first.user, messageList[filePayloadReference[payloadId]!!].first.message, messageList[filePayloadReference[payloadId]!!].first.date, messageList[filePayloadReference[payloadId]!!].first.color, 2)
+                    imageMessage.picture = payloadFile
+                    messageList[filePayloadReference[payloadId]!!] = Pair(imageMessage, 2)
+                    view?.updateMessageList(messageList, filePayloadReference[payloadId]!!)
+//                    payloadFile!!.renameTo(File(payloadFile.parentFile, newFilename))
+                }
+            }
         }
     }
 
@@ -124,9 +154,18 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
     override fun sendMessage(message: String) {
         val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
         val formattedDate = format.format(Date())
-        val chatMessage = ChatMessage(username, message, formattedDate, cardColor)
+        val chatMessage = ChatMessage(username, message, formattedDate, cardColor, 1)
         val dataToSend = Gson().toJson(chatMessage)
         connectionsClient.sendPayload(hostEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
+    }
+
+    override fun sendFile(filePayload: Payload) {
+        val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
+        val formattedDate = format.format(Date())
+        val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
+        val dataToSend = Gson().toJson(chatMessage)
+        connectionsClient.sendPayload(hostEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
+        connectionsClient.sendPayload(hostEndpointId, filePayload)
     }
 
     override fun stopDiscovery() {

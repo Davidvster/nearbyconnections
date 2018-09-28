@@ -68,6 +68,18 @@
                 app:layout_constraintTop_toBottomOf="@+id/message_content_user_layout"
                 tools:text="Message"/>
 
+            <ImageView
+                android:id="@+id/message_content_image"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="16dp"
+                android:paddingBottom="10dp"
+                android:paddingRight="16dp"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/message_content_user_layout"
+                tools:src="@drawable/ic_launcher_img"/>
+
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>

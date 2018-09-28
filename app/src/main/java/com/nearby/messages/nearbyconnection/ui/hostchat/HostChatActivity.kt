@@ -8,16 +8,19 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import com.google.android.gms.nearby.connection.Payload
 import com.google.gson.Gson
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.ui.chat.ChatAdapter
 import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_host_chat.*
-import java.text.SimpleDateFormat
-import java.util.Date
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
 
 class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View {
+
+    private val READ_REQUEST_CODE = 135
 
     private lateinit var chatAdapter: ChatAdapter
     lateinit var username: String
@@ -44,12 +47,19 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
 
         chat_send.setOnClickListener {
             if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
-                val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
-                val formattedDate = format.format(Date())
-                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor)
+                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
+                val formattedDate = format.print(DateTime.now())
+                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor, 1)
                 presenter.sendMessage(Gson().toJson(chatMessage))
                 presenter.addMessage(Pair(chatMessage, 1))
             }
+        }
+
+        chat_add.setOnClickListener {
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "image/*"
+            startActivityForResult(intent, READ_REQUEST_CODE)
         }
     }
 
@@ -68,11 +78,35 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         dialog.show()
     }
 
-    override fun setMessages(messageList: List<Pair<ChatMessage, Int>>) {
+    override fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>) {
         chatAdapter.messagesList = messageList
         chatAdapter.notifyItemInserted(messageList.size-1)
         chat_input.text = null
         chat_content.scrollToPosition(messageList.size - 1)
+    }
+
+    override fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>, position: Int) {
+        chatAdapter.messagesList = messageList
+        chatAdapter.notifyItemChanged(position)
+        chat_input.text = null
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                val uri = data.data
+
+                val pfd = contentResolver.openFileDescriptor(uri, "r")
+                val filePayload = Payload.fromFile(pfd)
+
+                presenter.sendFile(filePayload)
+
+                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
+                val formattedDate = format.print(DateTime.now())
+                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor, 2)
+                presenter.addMessage(Pair(chatMessage, 1))
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

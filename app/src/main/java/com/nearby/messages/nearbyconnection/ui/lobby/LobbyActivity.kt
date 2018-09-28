@@ -25,7 +25,7 @@ import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
 class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
 
-    private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.ACCESS_COARSE_LOCATION)
+    private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_WIFI_STATE, Manifest.permission.CHANGE_WIFI_STATE, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
     private val REQUEST_CODE_REQUIRED_PERMISSIONS = 1
     private var cardColor = 0
     private var defaultEditColor = -1
