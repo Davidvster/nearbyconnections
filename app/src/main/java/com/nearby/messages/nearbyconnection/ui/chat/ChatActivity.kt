@@ -2,6 +2,7 @@ package com.nearby.messages.nearbyconnection.ui.chat
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.database.Cursor
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
@@ -71,7 +72,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
             }
         }
 
-        chat_add.setOnClickListener {
+        chat_gallery.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "image/*"

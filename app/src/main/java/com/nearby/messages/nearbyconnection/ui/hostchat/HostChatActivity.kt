@@ -3,11 +3,13 @@ package com.nearby.messages.nearbyconnection.ui.hostchat
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.res.Configuration
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.google.android.gms.nearby.connection.Payload
 import com.google.gson.Gson
 import com.nearby.messages.nearbyconnection.R
@@ -56,11 +58,20 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
             }
         }
 
-        chat_add.setOnClickListener {
+        chat_gallery.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "image/*"
             startActivityForResult(intent, READ_REQUEST_CODE)
+        }
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
+            chat_add_layout.visibility = View.GONE
+        } else if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES) {
+            chat_add_layout.visibility = View.VISIBLE
         }
     }
 
@@ -100,7 +111,7 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
                 val pfd = contentResolver.openFileDescriptor(uri, "r")
                 val filePayload = Payload.fromFile(pfd)
 
-                presenter.sendFile(filePayload)
+                presenter.sendFile(filePayload, true)
 
                 val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
                 val formattedDate = format.print(DateTime.now())

@@ -72,15 +72,16 @@
                 android:id="@+id/message_content_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
+                android:adjustViewBounds= "true"
                 android:paddingBottom="10dp"
+                android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:layout_marginBottom="20dp"
                 android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/message_content_user_layout"
                 tools:src="@drawable/ic_launcher_img"
-                tools:visibility="visible"/>
+                tools:visibility="visible" />
 
         </android.support.constraint.ConstraintLayout>
 

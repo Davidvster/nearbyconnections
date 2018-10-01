@@ -61,8 +61,8 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
                 if (payload != null && payload.type == Payload.Type.FILE) {
                     val payloadFile = payload.asFile()!!.asJavaFile()
 
-//                    val newFilename = DateTime.now().toString()
-
+//                    val newFilename = DateTime.now().toString()=
+                    sendFile(payload, false, endpointId)
                     val imageMessage = ChatMessage(messageList[filePayloadReference[payloadId]!!].first.user, messageList[filePayloadReference[payloadId]!!].first.message, messageList[filePayloadReference[payloadId]!!].first.date, messageList[filePayloadReference[payloadId]!!].first.color, 2)
                     imageMessage.picture = payloadFile
                     messageList[filePayloadReference[payloadId]!!] = Pair(imageMessage, 2)
@@ -128,24 +128,27 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
     }
 
     override fun sendMessage(message: String, endpointId: String) {
-        for (guest in guests) {
-            if (guest.endpointId != endpointId) {
-                connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(message.toByteArray()))
-            }
-        }
+//        for (guest in guests) {
+//            if (guest.endpointId != endpointId) {
+//                connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(message.toByteArray()))
+//            }
+//        }
+        connectionsClient.sendPayload(guests.map { it.endpointId }.filter { it != endpointId }, Payload.fromBytes(message.toByteArray()))
     }
 
-    override fun sendFile(filePayload: Payload, endpointId: String) {
-        for (guest in guests) {
-            if (guest.endpointId != endpointId) {
-                val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
-                val formattedDate = format.format(Date())
-                val chatMessage = ChatMessage(guest.username, filePayload.id.toString(), formattedDate, cardColor, 2)
-                val dataToSend = Gson().toJson(chatMessage)
-                connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(dataToSend.toByteArray()))
-                connectionsClient.sendPayload(guest.endpointId, filePayload)
+    override fun sendFile(filePayload: Payload, sendReference: Boolean, endpointId: String) {
+        if (sendReference) {
+            for (guest in guests) {
+                if (guest.endpointId != endpointId) {
+                    val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
+                    val formattedDate = format.format(Date())
+                    val chatMessage = ChatMessage(guest.username, filePayload.id.toString(), formattedDate, cardColor, 2)
+                    val dataToSend = Gson().toJson(chatMessage)
+                    connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(dataToSend.toByteArray()))
+                }
             }
         }
+        connectionsClient.sendPayload(guests.map { it.endpointId }.filter { it != endpointId }, filePayload)
     }
 
     private fun sendParticipants() {

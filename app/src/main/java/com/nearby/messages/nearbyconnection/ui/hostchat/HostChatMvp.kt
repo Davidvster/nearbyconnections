@@ -18,7 +18,7 @@ interface HostChatMvp : BaseMvp {
         fun addMessage(message: Pair<ChatMessage, Int>)
         fun stopAllConnections()
         fun sendMessage(message: String, endpointId: String = "")
-        fun sendFile(filePayload: Payload, endpointId: String = "")
+        fun sendFile(filePayload: Payload, sendReference: Boolean, endpointId: String = "")
         fun acceptConnection(user: String, endpointId: String)
         fun rejectConnection(endpointId: String)
         fun getGuestList(): List<String>
