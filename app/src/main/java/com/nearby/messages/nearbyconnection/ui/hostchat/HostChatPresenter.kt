@@ -20,6 +20,8 @@ import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.data.model.Guest
 import com.nearby.messages.nearbyconnection.data.model.Participant
 import android.support.v4.util.SimpleArrayMap
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val context: Context = AppModule.application) : BasePresenter<HostChatMvp.View>(hostChatView), HostChatMvp.Presenter {
@@ -136,6 +138,11 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
     override fun sendFile(filePayload: Payload, endpointId: String) {
         for (guest in guests) {
             if (guest.endpointId != endpointId) {
+                val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
+                val formattedDate = format.format(Date())
+                val chatMessage = ChatMessage(guest.username, filePayload.id.toString(), formattedDate, cardColor, 2)
+                val dataToSend = Gson().toJson(chatMessage)
+                connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(dataToSend.toByteArray()))
                 connectionsClient.sendPayload(guest.endpointId, filePayload)
             }
         }

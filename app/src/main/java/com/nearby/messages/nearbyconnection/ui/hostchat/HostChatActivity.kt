@@ -17,6 +17,7 @@ import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_host_chat.*
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
+import java.io.File
 
 class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View {
 
@@ -104,6 +105,7 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
                 val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
                 val formattedDate = format.print(DateTime.now())
                 val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor, 2)
+                chatMessage.pictureUri = uri
                 presenter.addMessage(Pair(chatMessage, 1))
             }
         }

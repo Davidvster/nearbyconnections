@@ -130,7 +130,7 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
         override fun onDisconnected(endpointId: String) {
             availableGuests = HashMap()
-            view?.updateConnectionList(availableGuests.toMutableMap().toList().toMutableList())
+            view?.updateConnectionList(availableGuests.toList())
             hostEndpointId = ""
             connected = false
             messageList = mutableListOf()

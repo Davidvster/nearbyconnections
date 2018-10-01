@@ -77,9 +77,11 @@
                 android:paddingBottom="10dp"
                 android:paddingRight="16dp"
                 android:layout_marginBottom="20dp"
+                android:visibility="gone"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/message_content_user_layout"
-                tools:src="@drawable/ic_launcher_img"/>
+                tools:src="@drawable/ic_launcher_img"
+                tools:visibility="visible"/>
 
         </android.support.constraint.ConstraintLayout>
 

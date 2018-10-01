@@ -10,7 +10,7 @@
     <ImageView
         android:id="@+id/lobby_logo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="180dp"
         android:src="@drawable/ic_launcher_img"
         android:layout_marginBottom="20dp"
         app:layout_constraintBottom_toTopOf="@+id/lobby_user_name"

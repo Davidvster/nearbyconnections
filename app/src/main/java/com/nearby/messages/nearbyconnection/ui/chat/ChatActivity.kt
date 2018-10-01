@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import com.google.android.gms.nearby.connection.Payload
+import java.io.File
 
 
 class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
@@ -158,6 +159,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
                 val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
                 val formattedDate = format.print(DateTime.now())
                 val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
+                chatMessage.pictureUri = uri
                 presenter.addMessage(Pair(chatMessage, 1))
             }
         }
