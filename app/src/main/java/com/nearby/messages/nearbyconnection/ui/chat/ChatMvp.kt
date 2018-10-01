@@ -1,5 +1,8 @@
 package com.nearby.messages.nearbyconnection.ui.chat
 
+import android.content.ComponentName
+import android.content.Intent
+import android.net.Uri
 import com.google.android.gms.nearby.connection.Payload
 import com.nearby.messages.nearbyconnection.arch.BaseMvp
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
@@ -14,6 +17,7 @@ interface ChatMvp : BaseMvp {
         fun setToolbarTitle(roomTitle: String)
         fun stopRefreshConnectionList()
         fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>, position: Int)
+        fun startCameraActivity(takePictureIntent: Intent)
     }
 
     interface Presenter : BaseMvp.Presenter {
@@ -29,6 +33,7 @@ interface ChatMvp : BaseMvp {
         fun getGuestList(): List<String>
         fun getHostUsername(): String
         fun refreshConnectionList()
-        fun sendFile(filePayload: Payload)
+        fun sendFile(uri: Uri? = null)
+        fun attachImage(takePictureIntent: Intent, componentName: ComponentName)
     }
 }

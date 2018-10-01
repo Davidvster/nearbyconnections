@@ -3,15 +3,13 @@ package com.nearby.messages.nearbyconnection.ui.hostchat
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.content.res.Configuration
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import com.google.android.gms.nearby.connection.Payload
-import com.google.gson.Gson
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.ui.chat.ChatAdapter
@@ -20,10 +18,15 @@ import kotlinx.android.synthetic.main.activity_host_chat.*
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import java.io.File
+import android.net.Uri
+import android.view.View
+import com.nearby.messages.nearbyconnection.util.Extensions.afterTextChanged
+
 
 class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View {
 
     private val READ_REQUEST_CODE = 135
+    val REQUEST_IMAGE_CAPTURE = 98
 
     private lateinit var chatAdapter: ChatAdapter
     lateinit var username: String
@@ -50,30 +53,37 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
 
         chat_send.setOnClickListener {
             if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
-                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
-                val formattedDate = format.print(DateTime.now())
-                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor, 1)
-                presenter.sendMessage(Gson().toJson(chatMessage))
-                presenter.addMessage(Pair(chatMessage, 1))
+                presenter.sendMessage(chat_input.text.toString())
             }
         }
 
-        chat_gallery.setOnClickListener {
+        chat_add_gallery.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "image/*"
             startActivityForResult(intent, READ_REQUEST_CODE)
         }
-    }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO) {
-            chat_add_layout.visibility = View.GONE
-        } else if (newConfig.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_YES) {
-            chat_add_layout.visibility = View.VISIBLE
+        chat_add_photo.setOnClickListener {
+            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+                takePictureIntent.resolveActivity(packageManager)?.also {
+                    presenter.attachImage(takePictureIntent, it)
+                }
+            }
+        }
+
+        chat_input.afterTextChanged { text ->
+            if (text.isNullOrEmpty()) {
+                chat_add_card_layout.visibility = View.VISIBLE
+                chat_send.visibility = View.GONE
+            } else {
+                chat_send.visibility = View.VISIBLE
+                chat_add_card_layout.visibility = View.GONE
+            }
         }
     }
+
+
 
     override fun showJoinDialog(user: String, endpointId: String) {
         val builder = AlertDialog.Builder(this)
@@ -103,21 +113,31 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         chat_input.text = null
     }
 
+    override fun startCameraActivity(takePictureIntent: Intent) {
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 val uri = data.data
-
-                val pfd = contentResolver.openFileDescriptor(uri, "r")
-                val filePayload = Payload.fromFile(pfd)
-
-                presenter.sendFile(filePayload, true)
-
-                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
-                val formattedDate = format.print(DateTime.now())
-                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor, 2)
-                chatMessage.pictureUri = uri
-                presenter.addMessage(Pair(chatMessage, 1))
+                presenter.sendFile(uri)
+            }
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            if (data != null) {
+                presenter.sendFile()
+//                val uri = Uri.fromFile(File(currentPhotoPath))
+//
+//                val pfd = contentResolver.openFileDescriptor(uri, "r")
+//                val filePayload = Payload.fromFile(pfd)
+//
+//                presenter.sendReceivedFile(filePayload, true)
+//
+//                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
+//                val formattedDate = format.print(DateTime.now())
+//                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor, 2)
+//                chatMessage.pictureUri = uri
+//                presenter.addMessage(Pair(chatMessage, 1))
             }
         }
     }

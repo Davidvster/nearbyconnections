@@ -51,8 +51,7 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:animateLayoutChanges="true">
+            android:layout_height="wrap_content">
 
             <EditText
                 android:id="@+id/chat_input"
@@ -63,22 +62,18 @@
                 android:hint="@string/chat_message_input_hint"
                 android:maxLines="4"
                 android:padding="10dp"
-                app:layout_constraintEnd_toStartOf="@+id/chat_send"/>
-
-
+                app:layout_constraintEnd_toStartOf="@+id/chat_send"
+                app:layout_constraintStart_toStartOf="parent"/>
 
             <android.support.v7.widget.CardView
-                android:id="@+id/chat_add_layout"
-                android:layout_width="72dp"
+                android:id="@+id/chat_add_card_layout"
+                android:layout_width="92dp"
                 android:layout_height="46dp"
                 app:cardCornerRadius="23dp"
                 app:cardBackgroundColor="@color/color_primary"
                 android:elevation="5dp"
-                android:layout_marginRight="6dp"
-                android:layout_marginEnd="6dp"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/chat_input"
+                app:layout_constraintEnd_toEndOf="parent"
                 >
 
                 <android.support.constraint.ConstraintLayout
@@ -87,22 +82,22 @@
                     android:layout_gravity="center">
 
                     <ImageView
-                        android:id="@+id/chat_gallery"
+                        android:id="@+id/chat_add_gallery"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_gallery"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/chat_photo"/>
+                        app:layout_constraintEnd_toStartOf="@+id/chat_add_photo"/>
 
                     <ImageView
-                        android:id="@+id/chat_photo"
+                        android:id="@+id/chat_add_photo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center|end"
                         android:src="@drawable/ic_camera"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toEndOf="@+id/chat_gallery" />
+                        app:layout_constraintStart_toEndOf="@+id/chat_add_gallery" />
                 </android.support.constraint.ConstraintLayout>
 
             </android.support.v7.widget.CardView>
@@ -114,8 +109,10 @@
                 app:cardCornerRadius="23dp"
                 app:cardBackgroundColor="@color/color_accent"
                 android:elevation="5dp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" >
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:visibility="visible">
 
                 <ImageView
                     android:layout_width="wrap_content"

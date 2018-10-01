@@ -1,6 +1,12 @@
 package com.nearby.messages.nearbyconnection.ui.chat
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import android.support.v4.content.FileProvider
 import android.support.v4.util.SimpleArrayMap
 import android.util.Log
 import com.google.android.gms.nearby.Nearby
@@ -24,6 +30,8 @@ import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.data.model.Participant
 import org.joda.time.DateTime
+import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -45,6 +53,8 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
     private val incomingPayloads = SimpleArrayMap<Long, Payload>()
     private val filePayloadReference = SimpleArrayMap<Long, Int>()
+
+    private var currentPhotoPath: String = ""
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
@@ -156,14 +166,27 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         val formattedDate = format.format(Date())
         val chatMessage = ChatMessage(username, message, formattedDate, cardColor, 1)
         val dataToSend = Gson().toJson(chatMessage)
+        addMessage(Pair(chatMessage, 1))
         connectionsClient.sendPayload(hostEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
     }
 
-    override fun sendFile(filePayload: Payload) {
+    override fun sendFile(uri: Uri?) {
+        var uri = uri
+        if (uri == null) {
+            uri = Uri.fromFile(File(currentPhotoPath))
+        }
+        val pfd = context.contentResolver.openFileDescriptor(uri, "r")
+        val filePayload = Payload.fromFile(pfd)
+
         val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
         val formattedDate = format.format(Date())
         val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
         val dataToSend = Gson().toJson(chatMessage)
+//        connectionsClient.sendPayload(hostEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
+
+        chatMessage.pictureUri = uri
+        addMessage(Pair(chatMessage, 1))
+
         connectionsClient.sendPayload(hostEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
         connectionsClient.sendPayload(hostEndpointId, filePayload)
     }
@@ -209,5 +232,37 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         availableGuests = HashMap()
         view?.updateConnectionList(availableGuests.toList())
         view?.stopRefreshConnectionList()
+    }
+
+    override fun attachImage(takePictureIntent: Intent, componentName: ComponentName) {
+        val photoFile: File? = try {
+            createImageFile()
+        } catch (ex: IOException) {
+            null
+        }
+        photoFile?.also {
+            val photoURI: Uri = FileProvider.getUriForFile(
+                    context,
+                    "com.nearby.messages.nearbyconnection",
+                    it
+            )
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+            view?.startCameraActivity(takePictureIntent)
+
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+                "JPEG_${timeStamp}_", /* prefix */
+                ".jpg", /* suffix */
+                storageDir /* directory */
+        ).apply {
+            currentPhotoPath = absolutePath
+        }
     }
 }

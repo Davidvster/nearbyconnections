@@ -12,7 +12,6 @@ import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.squareup.picasso.Picasso
 
-
 class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
     var messagesList = listOf<Pair<ChatMessage, Int>>()
@@ -44,10 +43,10 @@ class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatA
                 } else {
                     holder.itemView.findViewById<TextView>(R.id.message_content_message).text = ""
                     if (message.picture != null) {
-                        Picasso.with(context).load(message.picture).into(imageView)
+                        Picasso.with(context).load(message.picture).resize(500, 500).into(imageView)
                         imageView.visibility = View.VISIBLE
                     } else if (message.pictureUri != null) {
-                        Picasso.with(context).load(message.pictureUri).into(imageView)
+                        Picasso.with(context).load(message.pictureUri).resize(500, 500).into(imageView)
                         imageView.visibility = View.VISIBLE
                     } else {
                         holder.itemView.findViewById<TextView>(R.id.message_content_message).text = context.resources.getString(R.string.chat_message_image_loading_error)

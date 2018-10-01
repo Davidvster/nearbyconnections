@@ -2,11 +2,13 @@ package com.nearby.messages.nearbyconnection.ui.chat
 
 import android.app.Activity
 import android.content.Intent
-import android.content.res.Configuration
-import android.database.Cursor
+import android.net.Uri
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.support.design.widget.Snackbar
+import android.support.v4.content.FileProvider
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
@@ -19,12 +21,19 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import com.google.android.gms.nearby.connection.Payload
+import com.nearby.messages.nearbyconnection.util.Extensions.afterTextChanged
 import java.io.File
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
 
     private val READ_REQUEST_CODE = 135
+    val REQUEST_IMAGE_CAPTURE = 98
+
+    private var currentPhotoPath: String = ""
 
     lateinit var username: String
     private var cardColor: Int = -1
@@ -65,24 +74,69 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         chat_send.setOnClickListener {
             if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
                 presenter.sendMessage(chat_input.text.toString())
-                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
-                val formattedDate = format.print(DateTime.now())
-                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor, 1)
-                presenter.addMessage(Pair(chatMessage, 1))
             }
         }
 
-        chat_gallery.setOnClickListener {
+        chat_add_gallery.setOnClickListener {
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             intent.type = "image/*"
             startActivityForResult(intent, READ_REQUEST_CODE)
         }
 
+        chat_add_photo.setOnClickListener {
+            Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+                takePictureIntent.resolveActivity(packageManager)?.also {
+                    presenter.attachImage(takePictureIntent, it)
+//                    val photoFile: File? = try {
+//                        createImageFile()
+//                    } catch (ex: IOException) {
+//                        null
+//                    }
+//                    photoFile?.also {
+//                        val photoURI: Uri = FileProvider.getUriForFile(
+//                                this,
+//                                "com.nearby.messages.nearbyconnection",
+//                                it
+//                        )
+//                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+//                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+//                    }
+                }
+            }
+        }
+
         connection_content_refresh.setOnRefreshListener {
             connection_content_refresh.isRefreshing = true
             presenter.refreshConnectionList()
         }
+
+        chat_input.afterTextChanged { text ->
+            if (text.isNullOrEmpty()) {
+                chat_add_card_layout.visibility = View.VISIBLE
+                chat_send.visibility = View.GONE
+            } else {
+                chat_send.visibility = View.VISIBLE
+                chat_add_card_layout.visibility = View.GONE
+            }
+        }
+    }
+
+//    @Throws(IOException::class)
+//    private fun createImageFile(): File {
+//        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+//        val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+//        return File.createTempFile(
+//                "JPEG_${timeStamp}_", /* prefix */
+//                ".jpg", /* suffix */
+//                storageDir /* directory */
+//        ).apply {
+//            currentPhotoPath = absolutePath
+//        }
+//    }
+
+    override fun startCameraActivity(takePictureIntent: Intent) {
+        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
     }
 
     override fun stopRefreshConnectionList() {
@@ -151,17 +205,33 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             if (data != null) {
                 val uri = data.data
-
-                val pfd = contentResolver.openFileDescriptor(uri, "r")
-                val filePayload = Payload.fromFile(pfd)
-
-                presenter.sendFile(filePayload)
-
-                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
-                val formattedDate = format.print(DateTime.now())
-                val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
-                chatMessage.pictureUri = uri
-                presenter.addMessage(Pair(chatMessage, 1))
+                presenter.sendFile(uri)
+//                val pfd = contentResolver.openFileDescriptor(uri, "r")
+//                val filePayload = Payload.fromFile(pfd)
+//
+//                presenter.sendFile(filePayload)
+//
+//                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
+//                val formattedDate = format.print(DateTime.now())
+//                val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
+//                chatMessage.pictureUri = uri
+//                presenter.addMessage(Pair(chatMessage, 1))
+            }
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            if (data != null) {
+                presenter.sendFile()
+//                val uri = Uri.fromFile(File(currentPhotoPath))
+//
+//                val pfd = contentResolver.openFileDescriptor(uri, "r")
+//                val filePayload = Payload.fromFile(pfd)
+//
+//                presenter.sendFile(filePayload)
+//
+//                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
+//                val formattedDate = format.print(DateTime.now())
+//                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor, 2)
+//                chatMessage.pictureUri = uri
+//                presenter.addMessage(Pair(chatMessage, 1))
             }
         }
     }

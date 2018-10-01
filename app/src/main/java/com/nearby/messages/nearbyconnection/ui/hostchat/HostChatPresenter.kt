@@ -1,6 +1,12 @@
 package com.nearby.messages.nearbyconnection.ui.hostchat
 
+import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import android.support.v4.content.FileProvider
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.AdvertisingOptions
 import com.google.android.gms.nearby.connection.ConnectionInfo
@@ -20,6 +26,10 @@ import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.data.model.Guest
 import com.nearby.messages.nearbyconnection.data.model.Participant
 import android.support.v4.util.SimpleArrayMap
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import java.io.File
+import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -38,17 +48,19 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
     private val incomingPayloads = SimpleArrayMap<Long, Payload>()
     private val filePayloadReference = SimpleArrayMap<Long, Int>()
 
+    private var currentPhotoPath: String = ""
+
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES) {
                 val chatMessage = Gson().fromJson(String(payload.asBytes()!!), ChatMessage::class.java)
                 if (chatMessage.type == 1) {
                     addMessage(Pair(chatMessage, 2))
-                    sendMessage(String(payload.asBytes()!!), endpointId)
+                    sendReceivedMessage(String(payload.asBytes()!!), endpointId)
                 } else {
                     filePayloadReference.put(chatMessage.message.toLong(), messageList.size)
                     addMessage(Pair(chatMessage, 2))
-                    sendMessage(String(payload.asBytes()!!), endpointId)
+                    sendReceivedMessage(String(payload.asBytes()!!), endpointId)
                 }
             } else if (payload.type == Payload.Type.FILE) {
                 incomingPayloads.put(payload.id, payload)
@@ -62,7 +74,7 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
                     val payloadFile = payload.asFile()!!.asJavaFile()
 
 //                    val newFilename = DateTime.now().toString()=
-                    sendFile(payload, false, endpointId)
+                    sendReceivedFile(payload, endpointId)
                     val imageMessage = ChatMessage(messageList[filePayloadReference[payloadId]!!].first.user, messageList[filePayloadReference[payloadId]!!].first.message, messageList[filePayloadReference[payloadId]!!].first.date, messageList[filePayloadReference[payloadId]!!].first.color, 2)
                     imageMessage.picture = payloadFile
                     messageList[filePayloadReference[payloadId]!!] = Pair(imageMessage, 2)
@@ -127,28 +139,46 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
         view?.updateMessageList(messageList)
     }
 
-    override fun sendMessage(message: String, endpointId: String) {
-//        for (guest in guests) {
-//            if (guest.endpointId != endpointId) {
-//                connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(message.toByteArray()))
-//            }
-//        }
+    override fun sendMessage(message: String) {
+        val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
+        val formattedDate = format.print(DateTime.now())
+        val chatMessage = ChatMessage(username, message, formattedDate, cardColor, 1)
+        addMessage(Pair(chatMessage, 1))
+        connectionsClient.sendPayload(guests.map { it.endpointId }, Payload.fromBytes(Gson().toJson(chatMessage).toByteArray()))
+    }
+
+    override fun sendReceivedMessage(message: String, endpointId: String) {
         connectionsClient.sendPayload(guests.map { it.endpointId }.filter { it != endpointId }, Payload.fromBytes(message.toByteArray()))
     }
 
-    override fun sendFile(filePayload: Payload, sendReference: Boolean, endpointId: String) {
-        if (sendReference) {
-            for (guest in guests) {
-                if (guest.endpointId != endpointId) {
-                    val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
-                    val formattedDate = format.format(Date())
-                    val chatMessage = ChatMessage(guest.username, filePayload.id.toString(), formattedDate, cardColor, 2)
-                    val dataToSend = Gson().toJson(chatMessage)
-                    connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(dataToSend.toByteArray()))
-                }
-            }
-        }
+    override fun sendReceivedFile(filePayload: Payload, endpointId: String) {
         connectionsClient.sendPayload(guests.map { it.endpointId }.filter { it != endpointId }, filePayload)
+    }
+
+    override fun sendFile(uri: Uri?) {
+        var uri = uri
+        if (uri == null) {
+            uri = Uri.fromFile(File(currentPhotoPath))
+        }
+        val pfd = context.contentResolver.openFileDescriptor(uri, "r")
+        val filePayload = Payload.fromFile(pfd)
+
+//                presenter.sendReceivedFile(filePayload, true)
+
+        val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
+        val formattedDate = format.print(DateTime.now())
+        val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
+        chatMessage.pictureUri = uri
+        addMessage(Pair(chatMessage, 1))
+
+        for (guest in guests) {
+            val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
+            val formattedDate = format.format(Date())
+            val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
+            val dataToSend = Gson().toJson(chatMessage)
+            connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(dataToSend.toByteArray()))
+        }
+        connectionsClient.sendPayload(guests.map { it.endpointId }, filePayload)
     }
 
     private fun sendParticipants() {
@@ -172,5 +202,37 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
 
     override fun getGuestList(): List<String> {
         return guests.map { it.username }
+    }
+
+    override fun attachImage(takePictureIntent: Intent, componentName: ComponentName) {
+        val photoFile: File? = try {
+            createImageFile()
+        } catch (ex: IOException) {
+            null
+        }
+        photoFile?.also {
+            val photoURI: Uri = FileProvider.getUriForFile(
+                    context,
+                    "com.nearby.messages.nearbyconnection",
+                    it
+            )
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+            view?.startCameraActivity(takePictureIntent)
+
+        }
+    }
+
+    @Throws(IOException::class)
+    private fun createImageFile(): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+                "JPEG_${timeStamp}_", /* prefix */
+                ".jpg", /* suffix */
+                storageDir /* directory */
+        ).apply {
+            currentPhotoPath = absolutePath
+        }
     }
 }
