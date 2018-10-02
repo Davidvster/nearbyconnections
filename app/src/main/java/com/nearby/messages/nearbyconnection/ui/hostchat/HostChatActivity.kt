@@ -9,17 +9,13 @@ import android.provider.MediaStore
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import com.google.android.gms.nearby.connection.Payload
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.ui.chat.ChatAdapter
 import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_host_chat.*
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
-import java.io.File
-import android.net.Uri
 import android.view.View
+import com.nearby.messages.nearbyconnection.ui.viewimage.ViewImageActivity
 import com.nearby.messages.nearbyconnection.util.Extensions.afterTextChanged
 
 
@@ -37,12 +33,13 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         presenter = HostChatPresenter(this)
         setContentView(R.layout.activity_host_chat)
 
+        username = intent.getStringExtra(MY_USER_NAME)
+        cardColor = intent.getIntExtra(CARD_BACKGROUND_COLOR, -1)
+
+        title = resources.getString(R.string.chat_host_room_title, username)
         setSupportActionBar(host_chat_toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
-
-        username = intent.getStringExtra(ARG_MY_USER_NAME)
-        cardColor = intent.getIntExtra(ARG_CARD_BACKGROUND_COLOR, -1)
 
         presenter.init(username, packageName, cardColor)
         presenter.startAdvertising()
@@ -50,6 +47,8 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         chatAdapter = ChatAdapter(this)
         chat_content.layoutManager = LinearLayoutManager(this)
         chat_content.adapter = chatAdapter
+
+        chatAdapter.onImageClicked = { ViewImageActivity.start(this, it)}
 
         chat_send.setOnClickListener {
             if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
@@ -179,14 +178,14 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
     }
 
     companion object {
-        private val ARG_MY_USER_NAME = "username.string"
-        private val ARG_CARD_BACKGROUND_COLOR = "color.integer"
+        private const val MY_USER_NAME = "username.string"
+        private const val CARD_BACKGROUND_COLOR = "color.integer"
 
         @JvmStatic
         fun start(context: Activity, username: String, cardColor: Int) {
             val intent = Intent(context, HostChatActivity::class.java)
-            intent.putExtra(ARG_MY_USER_NAME, username)
-            intent.putExtra(ARG_CARD_BACKGROUND_COLOR, cardColor)
+            intent.putExtra(MY_USER_NAME, username)
+            intent.putExtra(CARD_BACKGROUND_COLOR, cardColor)
             context.startActivity(intent)
         }
     }

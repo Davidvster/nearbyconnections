@@ -2,13 +2,10 @@ package com.nearby.messages.nearbyconnection.ui.chat
 
 import android.app.Activity
 import android.content.Intent
-import android.net.Uri
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.support.design.widget.Snackbar
-import android.support.v4.content.FileProvider
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
@@ -16,24 +13,16 @@ import android.view.View
 import android.widget.Toast
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
+import com.nearby.messages.nearbyconnection.ui.viewimage.ViewImageActivity
 import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_chat.*
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
-import com.google.android.gms.nearby.connection.Payload
 import com.nearby.messages.nearbyconnection.util.Extensions.afterTextChanged
-import java.io.File
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
 
 
 class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
 
     private val READ_REQUEST_CODE = 135
-    val REQUEST_IMAGE_CAPTURE = 98
-
-    private var currentPhotoPath: String = ""
+    private val REQUEST_IMAGE_CAPTURE = 98
 
     lateinit var username: String
     private var cardColor: Int = -1
@@ -52,8 +41,8 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
 
-        username = intent.getStringExtra(ARG_MY_USER_NAME)
-        cardColor = intent.getIntExtra(ARG_CARD_BACKGROUND_COLOR, -1)
+        username = intent.getStringExtra(MY_USER_NAME)
+        cardColor = intent.getIntExtra(CARD_BACKGROUND_COLOR, -1)
 
         presenter.init(username, packageName, cardColor)
         presenter.startDiscovery()
@@ -65,6 +54,8 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         chatAdapter = ChatAdapter(this)
         chat_content.layoutManager = LinearLayoutManager(this)
         chat_content.adapter = chatAdapter
+
+        chatAdapter.onImageClicked = { ViewImageActivity.start(this, it)}
 
         connectionAdapter.onRoomClicked =  {
             setProgressVisible(true)
@@ -88,20 +79,6 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
             Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
                 takePictureIntent.resolveActivity(packageManager)?.also {
                     presenter.attachImage(takePictureIntent, it)
-//                    val photoFile: File? = try {
-//                        createImageFile()
-//                    } catch (ex: IOException) {
-//                        null
-//                    }
-//                    photoFile?.also {
-//                        val photoURI: Uri = FileProvider.getUriForFile(
-//                                this,
-//                                "com.nearby.messages.nearbyconnection",
-//                                it
-//                        )
-//                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-//                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-//                    }
                 }
             }
         }
@@ -122,18 +99,6 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         }
     }
 
-//    @Throws(IOException::class)
-//    private fun createImageFile(): File {
-//        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-//        val storageDir: File = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-//        return File.createTempFile(
-//                "JPEG_${timeStamp}_", /* prefix */
-//                ".jpg", /* suffix */
-//                storageDir /* directory */
-//        ).apply {
-//            currentPhotoPath = absolutePath
-//        }
-//    }
 
     override fun startCameraActivity(takePictureIntent: Intent) {
         startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
@@ -206,32 +171,10 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
             if (data != null) {
                 val uri = data.data
                 presenter.sendFile(uri)
-//                val pfd = contentResolver.openFileDescriptor(uri, "r")
-//                val filePayload = Payload.fromFile(pfd)
-//
-//                presenter.sendFile(filePayload)
-//
-//                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
-//                val formattedDate = format.print(DateTime.now())
-//                val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
-//                chatMessage.pictureUri = uri
-//                presenter.addMessage(Pair(chatMessage, 1))
             }
         } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             if (data != null) {
                 presenter.sendFile()
-//                val uri = Uri.fromFile(File(currentPhotoPath))
-//
-//                val pfd = contentResolver.openFileDescriptor(uri, "r")
-//                val filePayload = Payload.fromFile(pfd)
-//
-//                presenter.sendFile(filePayload)
-//
-//                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
-//                val formattedDate = format.print(DateTime.now())
-//                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor, 2)
-//                chatMessage.pictureUri = uri
-//                presenter.addMessage(Pair(chatMessage, 1))
             }
         }
     }
@@ -289,14 +232,14 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
     }
 
     companion object {
-        private val ARG_MY_USER_NAME = "username.string"
-        private val ARG_CARD_BACKGROUND_COLOR = "color.integer"
+        private const val MY_USER_NAME = "username.string"
+        private const val CARD_BACKGROUND_COLOR = "color.integer"
 
         @JvmStatic
         fun start(context: Activity, username: String, cardColor: Int) {
             val intent = Intent(context, ChatActivity::class.java)
-            intent.putExtra(ARG_MY_USER_NAME, username)
-            intent.putExtra(ARG_CARD_BACKGROUND_COLOR, cardColor)
+            intent.putExtra(MY_USER_NAME, username)
+            intent.putExtra(CARD_BACKGROUND_COLOR, cardColor)
             context.startActivity(intent)
         }
     }

@@ -1,6 +1,7 @@
 package com.nearby.messages.nearbyconnection.ui.chat
 
 import android.content.Context
+import android.net.Uri
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -15,6 +16,8 @@ import com.squareup.picasso.Picasso
 class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatAdapter.ViewHolder>() {
 
     var messagesList = listOf<Pair<ChatMessage, Int>>()
+
+    var onImageClicked: ((fileUri: String) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatAdapter.ViewHolder {
         when (viewType) {
@@ -43,11 +46,17 @@ class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatA
                 } else {
                     holder.itemView.findViewById<TextView>(R.id.message_content_message).text = ""
                     if (message.picture != null) {
-                        Picasso.with(context).load(message.picture).resize(500, 500).into(imageView)
+                        Picasso.with(context).load(message.picture).resize(800, 800).centerInside().into(imageView)
                         imageView.visibility = View.VISIBLE
+                        imageView.setOnClickListener {
+                            onImageClicked!!.invoke(Uri.fromFile(message.picture).toString())
+                        }
                     } else if (message.pictureUri != null) {
-                        Picasso.with(context).load(message.pictureUri).resize(500, 500).into(imageView)
+                        Picasso.with(context).load(message.pictureUri).resize(800, 800).centerInside().into(imageView)
                         imageView.visibility = View.VISIBLE
+                        imageView.setOnClickListener {
+                            onImageClicked!!.invoke(message.pictureUri!!.toString())
+                        }
                     } else {
                         holder.itemView.findViewById<TextView>(R.id.message_content_message).text = context.resources.getString(R.string.chat_message_image_loading_error)
                     }

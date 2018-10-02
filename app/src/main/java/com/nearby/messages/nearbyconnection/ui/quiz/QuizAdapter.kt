@@ -24,7 +24,9 @@ class QuizAdapter constructor(val context: Context) : RecyclerView.Adapter<QuizA
             for (guest in result.guests) {
                 points.appendln(context.resources.getString(R.string.quiz_points_list, guest.username, guest.points.toString(), context.resources.getQuantityString(R.plurals.points, guest.points.toInt())))
             }
-            holder.itemView.findViewById<TextView>(R.id.result_element_score).text = context.resources.getString(R.string.quiz_points, points)
+            if (result.guests.isNotEmpty()) {
+                holder.itemView.findViewById<TextView>(R.id.result_element_score).text = context.resources.getString(R.string.quiz_points, points)
+            }
         }
     }
 

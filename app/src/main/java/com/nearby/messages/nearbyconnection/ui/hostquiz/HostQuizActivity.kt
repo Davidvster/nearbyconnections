@@ -39,12 +39,14 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
         handleRadioButtons()
         handleEditTexts()
 
+        username = intent.getStringExtra(MY_USER_NAME)
+        cardColor = intent.getIntExtra(CARD_BACKGROUND_COLOR, -1)
+
+        title = resources.getString(R.string.quiz_host_room_title, username)
         setSupportActionBar(host_quiz_toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
 
-        username = intent.getStringExtra(ARG_MY_USER_NAME)
-        cardColor = intent.getIntExtra(ARG_CARD_BACKGROUND_COLOR, -1)
 
         presenter.init(username, packageName, cardColor)
         presenter.startAdvertising()
@@ -242,14 +244,14 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
     }
 
     companion object {
-        private val ARG_MY_USER_NAME = "username.string"
-        private val ARG_CARD_BACKGROUND_COLOR = "color.integer"
+        private const val MY_USER_NAME = "username.string"
+        private const val CARD_BACKGROUND_COLOR = "color.integer"
 
         @JvmStatic
         fun start(context: Activity, username: String, cardColor: Int) {
             val intent = Intent(context, HostQuizActivity::class.java)
-            intent.putExtra(ARG_MY_USER_NAME, username)
-            intent.putExtra(ARG_CARD_BACKGROUND_COLOR, cardColor)
+            intent.putExtra(MY_USER_NAME, username)
+            intent.putExtra(CARD_BACKGROUND_COLOR, cardColor)
             context.startActivity(intent)
         }
     }
