@@ -20,6 +20,7 @@ import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.Participant
+import com.nearby.messages.nearbyconnection.data.model.QuizGuestRequest
 import com.nearby.messages.nearbyconnection.data.model.QuizQuestion
 import com.nearby.messages.nearbyconnection.data.model.QuizResponse
 import com.nearby.messages.nearbyconnection.data.model.QuizResult
@@ -163,7 +164,9 @@ class QuizPresenter constructor(quizView: QuizMvp.View, private val context: Con
     override fun requestConnection(endpointId: String) {
         if (availableGuests[endpointId] != null) {
             connectingTo = endpointId
-            connectionsClient.requestConnection(username, endpointId, connectionLifecycleCallback)
+            val quizRequest = QuizGuestRequest(username, cardColor)
+            val dataToSend = Gson().toJson(quizRequest)
+            connectionsClient.requestConnection(dataToSend, endpointId, connectionLifecycleCallback)
         }
     }
 

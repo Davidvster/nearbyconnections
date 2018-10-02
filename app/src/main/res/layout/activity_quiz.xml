@@ -118,6 +118,21 @@
                 tools:text="60"/>
         </android.support.v7.widget.CardView>
 
+        <TextView
+            android:id="@+id/quiz_answer_waiting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:textStyle="bold"
+            android:textColor="@color/color_black"
+            android:textSize="14sp"
+            android:padding="10dp"
+            android:gravity="center"
+            android:text="@string/quiz_answer_waiting"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
         <android.support.constraint.ConstraintLayout
             android:id="@+id/quiz_answer_layout"
             android:layout_width="match_parent"
@@ -183,15 +198,15 @@
                 android:id="@+id/quiz_answer_c"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:minHeight="50dp"
-                android:gravity="center"
                 android:layout_marginBottom="6dp"
                 android:layout_marginEnd="3dp"
                 android:background="@color/answer_c"
+                android:gravity="center"
+                android:minHeight="50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/quiz_answer_d"
-                tools:text="Answer C"/>
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Answer C" />
 
             <TextView
                 android:id="@+id/quiz_answer_d"

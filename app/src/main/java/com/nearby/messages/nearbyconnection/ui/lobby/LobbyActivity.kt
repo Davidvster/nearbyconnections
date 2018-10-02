@@ -109,7 +109,7 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
     }
 
     private fun checkInputName(): Boolean {
-        if (lobby_user_name.text.toString().isNullOrEmpty() || lobby_user_name.text.toString() == "") {
+        if (lobby_user_name.text.toString().isEmpty() || lobby_user_name.text.toString() == "") {
             lobby_user_name_error.text = resources.getString(R.string.lobby_empty_username)
             lobby_user_name_error.visibility = View.VISIBLE
             if (android.os.Build.VERSION.SDK_INT >= 21) {

@@ -19,11 +19,10 @@ import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.Guest
 import com.nearby.messages.nearbyconnection.data.model.Participant
+import com.nearby.messages.nearbyconnection.data.model.QuizGuestRequest
 import com.nearby.messages.nearbyconnection.data.model.QuizQuestion
 import com.nearby.messages.nearbyconnection.data.model.QuizResponse
 import com.nearby.messages.nearbyconnection.data.model.QuizResult
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Timer
@@ -61,7 +60,8 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
     private val connectionLifecycleCallback = object : ConnectionLifecycleCallback() {
 
         override fun onConnectionInitiated(endpointId: String, connectionInfo: ConnectionInfo) {
-            view?.showJoinDialog(connectionInfo.endpointName, endpointId)
+            val quizRequest = Gson().fromJson(connectionInfo.endpointName, QuizGuestRequest::class.java)
+            view?.showJoinDialog(quizRequest, endpointId)
         }
 
         override fun onConnectionResult(endpointId: String, result: ConnectionResolution) {
@@ -116,8 +116,10 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
         }
     }
 
-    override fun acceptConnection(user: String, endpointId: String) {
-        guests.add(Guest(endpointId, user))
+    override fun acceptConnection(user: QuizGuestRequest, endpointId: String) {
+        val newGuest = Guest(endpointId, user.username)
+        newGuest.cardColor = user.cardColor
+        guests.add(newGuest)
         connectionsClient.acceptConnection(endpointId, payloadCallback)
     }
 
@@ -126,19 +128,13 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
     }
 
     private fun sendMessage(endpointIds: List<String>, message: String, endpointId: String? = null) {
-        for (guest in endpointIds) {
-            if (guest != endpointId) {
-                connectionsClient.sendPayload(guest, Payload.fromBytes(message.toByteArray()))
-            }
-        }
+        connectionsClient.sendPayload(endpointIds.filter { it != endpointId }, Payload.fromBytes(message.toByteArray()))
     }
 
     override fun sendQuestion(question: QuizQuestion, correctAnswer: Int) {
         this.correctAnswer = correctAnswer
-        for (guest in guests) {
-            val message = Gson().toJson(question)
-            connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(message.toByteArray()))
-        }
+        val message = Gson().toJson(question)
+        connectionsClient.sendPayload(guests.map { it.endpointId }, Payload.fromBytes(message.toByteArray()))
         view?.enableQuizForm(false)
         val currentRound  = resultList.size
         Timer().schedule(timerTask {
@@ -165,15 +161,15 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
                 val seconds =  cal.get(Calendar.SECOND)
                 currentQuizResponses = mutableListOf()
                 val winner = guests.find { it.endpointId == winnerResponse.endpointId }
-                var quizResult = QuizResult(context.resources.getString(R.string.quiz_winner_text_others, winner!!.username, seconds.toString(), context.resources.getQuantityString(R.plurals.seconds, seconds)), guests.sortedByDescending { it.points })
+                var quizResult = QuizResult(context.resources.getString(R.string.quiz_winner_text_others, winner!!.username, seconds.toString(), context.resources.getQuantityString(R.plurals.seconds, seconds)), winner.cardColor!!, guests.sortedByDescending { it.points })
                 sendMessage(guests.map { it.endpointId }, Gson().toJson(quizResult), winnerResponse.endpointId)
                 resultList.add(quizResult)
                 view?.updateQuizResult(resultList)
 
-                quizResult = QuizResult(context.resources.getString(R.string.quiz_winner_text_winner, seconds.toString(), context.resources.getQuantityString(R.plurals.seconds, seconds)), guests.sortedByDescending { it.points })
+                quizResult = QuizResult(context.resources.getString(R.string.quiz_winner_text_winner, seconds.toString(), context.resources.getQuantityString(R.plurals.seconds, seconds)), winner.cardColor!!, guests.sortedByDescending { it.points })
                 sendMessage(listOf(winnerResponse.endpointId), Gson().toJson(quizResult))
             } else {
-                var quizResult = QuizResult(context.resources.getString(R.string.quiz_winner_text_no_winner), guests.sortedByDescending { it.points })
+                var quizResult = QuizResult(context.resources.getString(R.string.quiz_winner_text_no_winner), cardColor, guests.sortedByDescending { it.points })
                 sendMessage(guests.map { it.endpointId }, Gson().toJson(quizResult))
                 resultList.add(quizResult)
                 view?.updateQuizResult(resultList)

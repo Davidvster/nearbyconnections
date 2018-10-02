@@ -32,6 +32,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 
 class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val context: Context = AppModule.application) : BasePresenter<HostChatMvp.View>(hostChatView), HostChatMvp.Presenter {
@@ -160,22 +161,17 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
         if (uri == null) {
             uri = Uri.fromFile(File(currentPhotoPath))
         }
-        val pfd = context.contentResolver.openFileDescriptor(uri, "r")
-        val filePayload = Payload.fromFile(pfd)
-
-//                presenter.sendReceivedFile(filePayload, true)
+        val pfd = context.contentResolver.openFileDescriptor(uri!!, "r")
+        val filePayload = Payload.fromFile(pfd!!)
 
         val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
         val formattedDate = format.print(DateTime.now())
         val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
+        val dataToSend = Gson().toJson(chatMessage)
         chatMessage.pictureUri = uri
         addMessage(Pair(chatMessage, 1))
 
         for (guest in guests) {
-            val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
-            val formattedDate = format.format(Date())
-            val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
-            val dataToSend = Gson().toJson(chatMessage)
             connectionsClient.sendPayload(guest.endpointId, Payload.fromBytes(dataToSend.toByteArray()))
         }
         connectionsClient.sendPayload(guests.map { it.endpointId }, filePayload)
@@ -225,8 +221,8 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.UK).format(Date())
+        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
                 "JPEG_${timeStamp}_", /* prefix */
                 ".jpg", /* suffix */

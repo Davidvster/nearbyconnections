@@ -21,7 +21,7 @@ import android.view.animation.LinearInterpolator
 
 class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
 
-    lateinit var username: String
+    private lateinit var username: String
     private var cardColor: Int = -1
 
     private lateinit var connectionAdapter: ConnectionAdapter
@@ -58,26 +58,29 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         quiz_content.adapter = quizAdapter
 
         quiz_answer_a.setOnClickListener {
-            presenter.sendAnswer(1)
-            quiz_answer_layout.visibility = View.GONE
+            submitQuestion(1)
         }
         quiz_answer_b.setOnClickListener {
-            presenter.sendAnswer(2)
-            quiz_answer_layout.visibility = View.GONE
+            submitQuestion(2)
         }
         quiz_answer_c.setOnClickListener {
-            presenter.sendAnswer(3)
-            quiz_answer_layout.visibility = View.GONE
+            submitQuestion(3)
         }
         quiz_answer_d.setOnClickListener {
-            presenter.sendAnswer(4)
-            quiz_answer_layout.visibility = View.GONE
+            submitQuestion(4)
         }
 
         connection_content_refresh.setOnRefreshListener {
             connection_content_refresh.isRefreshing = true
             presenter.refreshConnectionList()
         }
+    }
+
+    private fun submitQuestion(response: Int) {
+        presenter.sendAnswer(response)
+        quiz_answer_layout.visibility = View.GONE
+        quiz_answer_waiting.text = resources.getString(R.string.quiz_answer_responded)
+        quiz_answer_waiting.visibility = View.VISIBLE
     }
 
     override fun stopRefreshConnectionList() {
@@ -111,6 +114,8 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
     }
 
     override fun setQuestion(question: QuizQuestion) {
+        quiz_answer_waiting.text = resources.getString(R.string.quiz_answer_waiting)
+        quiz_answer_waiting.visibility = View.GONE
         quiz_question.text = question.question
         quiz_answer_a.text = question.answerA
         quiz_answer_b.text = question.answerB
@@ -120,6 +125,10 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         quiz_timer_layout.visibility = View.VISIBLE
         val animator = ValueAnimator.ofInt(60, 0)
         animator.interpolator = LinearInterpolator()
+        try {
+            ValueAnimator::class.java.getMethod("setDurationScale", Float::class.javaPrimitiveType).invoke(null, 1f)
+        } catch (t: Throwable) {
+        }
         animator.duration = 60000
         animator.addUpdateListener { animation ->
             quiz_timer.text = animation.animatedValue.toString()
@@ -140,6 +149,8 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
     override fun updateQuizResult(resultList: MutableList<QuizResult>) {
         quizAdapter.resultList = resultList
         quizAdapter.notifyItemInserted(resultList.size-1)
+        quiz_answer_waiting.text = resources.getString(R.string.quiz_answer_waiting)
+        quiz_answer_waiting.visibility = View.VISIBLE
         quiz_answer_layout.visibility = View.GONE
         quiz_timer_layout.visibility = View.GONE
         quiz_content.scrollToPosition(resultList.size -1)

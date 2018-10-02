@@ -16,6 +16,7 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.EditText
 import com.nearby.messages.nearbyconnection.R
+import com.nearby.messages.nearbyconnection.data.model.QuizGuestRequest
 import com.nearby.messages.nearbyconnection.data.model.QuizQuestion
 import com.nearby.messages.nearbyconnection.data.model.QuizResult
 import com.nearby.messages.nearbyconnection.ui.quiz.QuizAdapter
@@ -98,6 +99,10 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
                 quiz_timer_layout.visibility = View.VISIBLE
                 val animator = ValueAnimator.ofInt(60, 0)
                 animator.interpolator = LinearInterpolator()
+                try {
+                    ValueAnimator::class.java.getMethod("setDurationScale", Float::class.javaPrimitiveType).invoke(null, 1f)
+                } catch (t: Throwable) {
+                }
                 animator.duration = 60000
                 animator.addUpdateListener { animation ->
                     quiz_timer.text = animation.animatedValue.toString()
@@ -107,10 +112,10 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
         }
     }
 
-    override fun showJoinDialog(user: String, endpointId: String) {
+    override fun showJoinDialog(user: QuizGuestRequest, endpointId: String) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle(resources.getString(R.string.dialog_request_title))
-        builder.setMessage(resources.getString(R.string.dialog_request_description, user ))
+        builder.setMessage(resources.getString(R.string.dialog_request_description, user.username ))
         builder.setPositiveButton(resources.getString(R.string.dialog_request_accept)) { _, _ ->
             presenter.acceptConnection(user, endpointId)
         }
@@ -132,7 +137,7 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
     }
 
     private fun checkInputEmpty(editText: EditText): Boolean {
-        if (editText.text.toString().replace("/^\\s*/".toRegex(), "").isNullOrEmpty()) {
+        if (editText.text.toString().replace("/^\\s*/".toRegex(), "").isEmpty()) {
             if (android.os.Build.VERSION.SDK_INT >= 21) {
                 editText.backgroundTintList = ColorStateList.valueOf(Color.RED)
             }

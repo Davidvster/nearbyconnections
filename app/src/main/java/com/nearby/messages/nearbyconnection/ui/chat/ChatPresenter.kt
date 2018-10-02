@@ -8,7 +8,6 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
 import android.support.v4.util.SimpleArrayMap
-import android.util.Log
 import com.google.android.gms.nearby.Nearby
 import com.google.android.gms.nearby.connection.ConnectionInfo
 import com.google.android.gms.nearby.connection.ConnectionLifecycleCallback
@@ -29,11 +28,11 @@ import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.data.model.Participant
-import org.joda.time.DateTime
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
 
 class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Context = AppModule.application) : BasePresenter<ChatMvp.View>(chatView), ChatMvp.Presenter {
 
@@ -149,10 +148,10 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         }
     }
 
-    override fun init(username: String, packageName: String, colorCard: Int) {
+    override fun init(username: String, packageName: String, cardColor: Int) {
         this.username = username
         this.packageName = packageName + BuildConfig.CHAT_ID
-        this.cardColor = colorCard
+        this.cardColor = cardColor
         connectionsClient = Nearby.getConnectionsClient(context)
     }
 
@@ -162,7 +161,7 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
     }
 
     override fun sendMessage(message: String) {
-        val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
+        val format = SimpleDateFormat("HH:mm - d.MM.yyyy", Locale.UK)
         val formattedDate = format.format(Date())
         val chatMessage = ChatMessage(username, message, formattedDate, cardColor, 1)
         val dataToSend = Gson().toJson(chatMessage)
@@ -175,14 +174,13 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         if (uri == null) {
             uri = Uri.fromFile(File(currentPhotoPath))
         }
-        val pfd = context.contentResolver.openFileDescriptor(uri, "r")
-        val filePayload = Payload.fromFile(pfd)
+        val pfd = context.contentResolver.openFileDescriptor(uri!!, "r")
+        val filePayload = Payload.fromFile(pfd!!)
 
-        val format = SimpleDateFormat("HH:mm - d.MM.yyyy")
+        val format = SimpleDateFormat("HH:mm - d.MM.yyyy", Locale.UK)
         val formattedDate = format.format(Date())
         val chatMessage = ChatMessage(username, filePayload.id.toString(), formattedDate, cardColor, 2)
         val dataToSend = Gson().toJson(chatMessage)
-//        connectionsClient.sendPayload(hostEndpointId, Payload.fromBytes(dataToSend.toByteArray()))
 
         chatMessage.pictureUri = uri
         addMessage(Pair(chatMessage, 1))
@@ -255,8 +253,8 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
-        val storageDir: File = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.UK).format(Date())
+        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
                 "JPEG_${timeStamp}_", /* prefix */
                 ".jpg", /* suffix */

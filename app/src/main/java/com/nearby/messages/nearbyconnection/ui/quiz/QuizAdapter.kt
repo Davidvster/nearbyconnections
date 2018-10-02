@@ -1,6 +1,7 @@
 package com.nearby.messages.nearbyconnection.ui.quiz
 
 import android.content.Context
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -27,6 +28,7 @@ class QuizAdapter constructor(val context: Context) : RecyclerView.Adapter<QuizA
             if (result.guests.isNotEmpty()) {
                 holder.itemView.findViewById<TextView>(R.id.result_element_score).text = context.resources.getString(R.string.quiz_points, points)
             }
+            holder.itemView.findViewById<CardView>(R.id.result_card).setCardBackgroundColor(result.cardColor)
         }
     }
 

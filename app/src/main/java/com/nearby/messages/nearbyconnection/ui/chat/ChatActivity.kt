@@ -63,7 +63,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         }
 
         chat_send.setOnClickListener {
-            if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
+            if (!chat_input.text.toString().isEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
                 presenter.sendMessage(chat_input.text.toString())
             }
         }
@@ -89,7 +89,7 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         }
 
         chat_input.afterTextChanged { text ->
-            if (text.isNullOrEmpty()) {
+            if (text.isEmpty()) {
                 chat_add_card_layout.visibility = View.VISIBLE
                 chat_send.visibility = View.GONE
             } else {

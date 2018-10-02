@@ -11,6 +11,7 @@
     <string name="chat_room_title">%s Chat-Room</string>
     <string name="chat_message_input_hint">Enter message to send</string>
     <string name="chat_message_image_loading">The image is loading&#8230;</string>
+    <string name="chat_message_image_loading_error">There was an error while loading the image</string>
 
     <string name="quiz_connect_room_title">Connect to a Quiz Room</string>
     <string name="quiz_connect_search">Searching for available quiz rooms&#8230;</string>
@@ -20,6 +21,8 @@
     <string name="quiz_winner_text_no_winner">There are no winners for this round!</string>
     <string name="quiz_guest_list_room_host">Quiz-room host: %s</string>
     <string name="quiz_room_title">%s Quiz-Room</string>
+    <string name="quiz_answer_waiting">Waiting for the host to post a question&#8230;</string>
+    <string name="quiz_answer_responded">You submitted your answer!\nWaiting for other players to respond&#8230;</string>
     <string name="quiz_points_list">%s currently has %s %s</string>
     <string name="quiz_points">Points:\n%s</string>
     <string name="quiz_input_question">Insert the question</string>
@@ -60,6 +63,5 @@
 
     <string name="permission_denied">A permission was denied</string>
     <string name="connection_ended">You have been disconnected.</string>
-    <string name="chat_message_image_loading_error">There was an error while loading the image</string>
 
 </resources>

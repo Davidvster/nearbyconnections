@@ -22,7 +22,7 @@ import com.nearby.messages.nearbyconnection.util.Extensions.afterTextChanged
 class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View {
 
     private val READ_REQUEST_CODE = 135
-    val REQUEST_IMAGE_CAPTURE = 98
+    private val REQUEST_IMAGE_CAPTURE = 98
 
     private lateinit var chatAdapter: ChatAdapter
     lateinit var username: String
@@ -51,7 +51,7 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         chatAdapter.onImageClicked = { ViewImageActivity.start(this, it)}
 
         chat_send.setOnClickListener {
-            if (!chat_input.text.toString().isNullOrEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
+            if (chat_input.text.toString().isNotEmpty() && chat_input.text.toString() != "" && chat_input.text.toString().replace("\\s".toRegex(), "").isNotEmpty()) {
                 presenter.sendMessage(chat_input.text.toString())
             }
         }
@@ -72,7 +72,7 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         }
 
         chat_input.afterTextChanged { text ->
-            if (text.isNullOrEmpty()) {
+            if (text.isEmpty()) {
                 chat_add_card_layout.visibility = View.VISIBLE
                 chat_send.visibility = View.GONE
             } else {
