@@ -78,13 +78,35 @@
             android:layout_marginBottom="6dp"
             app:layout_constraintBottom_toTopOf="@+id/quiz_input_answer_a_layout">
 
-            <android.support.v7.widget.AppCompatEditText
-                android:id="@+id/quiz_input_question"
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/quiz_input_question"
-                android:maxLength="300"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_height="wrap_content">
+
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/quiz_input_question"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/quiz_input_question"
+                    android:maxLength="300"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/quiz_input_duration"/>
+
+                <android.support.v7.widget.AppCompatEditText
+                    android:id="@+id/quiz_input_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:minWidth="40dp"
+                    android:layout_marginStart="6dp"
+                    android:digits="0123456789"
+                    android:inputType="number"
+                    android:hint="@string/quiz_duration"
+                    android:maxLength="3"
+                    app:layout_constraintStart_toEndOf="@+id/quiz_input_question"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+            </android.support.constraint.ConstraintLayout>
+
 
         </android.support.v7.widget.CardView>
 
@@ -274,7 +296,5 @@
         </android.support.v7.widget.CardView>
 
     </android.support.constraint.ConstraintLayout>
-
-
 
 </android.support.constraint.ConstraintLayout>

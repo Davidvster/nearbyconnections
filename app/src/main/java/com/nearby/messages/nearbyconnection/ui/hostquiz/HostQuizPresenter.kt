@@ -139,7 +139,7 @@ class HostQuizPresenter constructor(hostQuizView: HostQuizMvp.View, private val 
         val currentRound  = resultList.size
         Timer().schedule(timerTask {
             endOfQuiz(currentRound)
-        }, 60000)
+        }, question.durationSec * 1000)
     }
 
     private fun endOfQuiz(round: Int) {

@@ -63,5 +63,6 @@
 
     <string name="permission_denied">A permission was denied</string>
     <string name="connection_ended">You have been disconnected.</string>
+    <string name="quiz_duration">Duration</string>
 
 </resources>

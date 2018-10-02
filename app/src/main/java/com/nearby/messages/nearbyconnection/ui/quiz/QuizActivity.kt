@@ -123,13 +123,13 @@ class QuizActivity : BaseActivity<QuizMvp.Presenter>(), QuizMvp.View {
         quiz_answer_d.text = question.answerD
         quiz_answer_layout.visibility = View.VISIBLE
         quiz_timer_layout.visibility = View.VISIBLE
-        val animator = ValueAnimator.ofInt(60, 0)
+        val animator = ValueAnimator.ofInt(question.durationSec.toInt(), 0)
         animator.interpolator = LinearInterpolator()
         try {
             ValueAnimator::class.java.getMethod("setDurationScale", Float::class.javaPrimitiveType).invoke(null, 1f)
         } catch (t: Throwable) {
         }
-        animator.duration = 60000
+        animator.duration = question.durationSec * 1000
         animator.addUpdateListener { animation ->
             quiz_timer.text = animation.animatedValue.toString()
         }

@@ -121,10 +121,8 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
                 val uri = data.data
                 presenter.sendFile(uri)
             }
-        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            if (data != null) {
-                presenter.sendFile()
-            }
+        } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
+            presenter.sendFile()
         }
     }
 

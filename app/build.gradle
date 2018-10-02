@@ -15,7 +15,7 @@ android {
     }
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.nearby.messages.nearbyconnection"
+        applicationId "com.valraz.quizchat"
         minSdkVersion 17
         targetSdkVersion 28
         versionCode 1
@@ -27,7 +27,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
             debuggable false

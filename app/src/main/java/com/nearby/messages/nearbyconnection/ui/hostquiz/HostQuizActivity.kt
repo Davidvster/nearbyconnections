@@ -54,7 +54,11 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
 
         quiz_send.setOnClickListener {
             if (checkQuizInput()) {
-                val question = QuizQuestion(quiz_input_question.text.toString(), quiz_input_answer_a.text.toString(), quiz_input_answer_b.text.toString(), quiz_input_answer_c.text.toString(), quiz_input_answer_d.text.toString())
+                var durationSec = 60L
+                if (quiz_input_duration.text.toString().isNotEmpty() && quiz_input_duration.text.toString().toLong() > 0) {
+                    durationSec = quiz_input_duration.text.toString().toLong()
+                }
+                val question = QuizQuestion(quiz_input_question.text.toString(), quiz_input_answer_a.text.toString(), quiz_input_answer_b.text.toString(), quiz_input_answer_c.text.toString(), quiz_input_answer_d.text.toString(), durationSec)
                 presenter.sendQuestion(question, correctAnswer)
             }
         }
@@ -75,6 +79,7 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
     override fun enableQuizForm(enabled: Boolean) {
         runOnUiThread {
             quiz_input_question.isEnabled = enabled
+            quiz_input_duration.isEnabled = enabled
             quiz_input_answer_a.isEnabled = enabled
             quiz_radio_answer_a.isEnabled = enabled
             quiz_input_answer_b.isEnabled = enabled
@@ -96,14 +101,18 @@ class HostQuizActivity : BaseActivity<HostQuizMvp.Presenter>(), HostQuizMvp.View
                 quiz_radio_answer_c.isChecked = false
                 quiz_radio_answer_d.isChecked = false
             } else {
+                var durationSec = 60L
+                if (quiz_input_duration.text.toString().isNotEmpty() && quiz_input_duration.text.toString().toLong() > 0) {
+                    durationSec = quiz_input_duration.text.toString().toLong()
+                }
                 quiz_timer_layout.visibility = View.VISIBLE
-                val animator = ValueAnimator.ofInt(60, 0)
+                val animator = ValueAnimator.ofInt(durationSec.toInt(), 0)
                 animator.interpolator = LinearInterpolator()
                 try {
                     ValueAnimator::class.java.getMethod("setDurationScale", Float::class.javaPrimitiveType).invoke(null, 1f)
                 } catch (t: Throwable) {
                 }
-                animator.duration = 60000
+                animator.duration = durationSec * 1000
                 animator.addUpdateListener { animation ->
                     quiz_timer.text = animation.animatedValue.toString()
                 }
