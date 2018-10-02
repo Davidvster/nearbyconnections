@@ -18,7 +18,6 @@ import android.view.View
 import com.nearby.messages.nearbyconnection.ui.viewimage.ViewImageActivity
 import com.nearby.messages.nearbyconnection.util.Extensions.afterTextChanged
 
-
 class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View {
 
     private val READ_REQUEST_CODE = 135
@@ -125,18 +124,6 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         } else if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             if (data != null) {
                 presenter.sendFile()
-//                val uri = Uri.fromFile(File(currentPhotoPath))
-//
-//                val pfd = contentResolver.openFileDescriptor(uri, "r")
-//                val filePayload = Payload.fromFile(pfd)
-//
-//                presenter.sendReceivedFile(filePayload, true)
-//
-//                val format = DateTimeFormat.forPattern("HH:mm - d.MM.yyyy")
-//                val formattedDate = format.print(DateTime.now())
-//                val chatMessage = ChatMessage(username, chat_input.text.toString(), formattedDate, cardColor, 2)
-//                chatMessage.pictureUri = uri
-//                presenter.addMessage(Pair(chatMessage, 1))
             }
         }
     }

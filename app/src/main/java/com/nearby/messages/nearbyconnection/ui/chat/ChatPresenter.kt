@@ -84,13 +84,10 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
                 if (payload != null && payload.type == Payload.Type.FILE) {
                     val payloadFile = payload.asFile()!!.asJavaFile()
 
-//                    val newFilename = DateTime.now().toString()
-
                     val imageMessage = ChatMessage(messageList[filePayloadReference[payloadId]!!].first.user, messageList[filePayloadReference[payloadId]!!].first.message, messageList[filePayloadReference[payloadId]!!].first.date, messageList[filePayloadReference[payloadId]!!].first.color, 2)
                     imageMessage.picture = payloadFile
                     messageList[filePayloadReference[payloadId]!!] = Pair(imageMessage, 2)
                     view?.updateMessageList(messageList, filePayloadReference[payloadId]!!)
-//                    payloadFile!!.renameTo(File(payloadFile.parentFile, newFilename))
                 }
             }
         }

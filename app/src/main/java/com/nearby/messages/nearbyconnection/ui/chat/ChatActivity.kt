@@ -18,7 +18,6 @@ import com.nearby.messages.nearbyconnection.ui.views.GuestListDialog
 import kotlinx.android.synthetic.main.activity_chat.*
 import com.nearby.messages.nearbyconnection.util.Extensions.afterTextChanged
 
-
 class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
 
     private val READ_REQUEST_CODE = 135
