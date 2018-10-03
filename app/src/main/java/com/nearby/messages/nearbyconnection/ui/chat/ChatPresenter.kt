@@ -27,6 +27,7 @@ import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
+import com.nearby.messages.nearbyconnection.data.model.LanguagesTopics
 import com.nearby.messages.nearbyconnection.data.model.Participant
 import java.io.File
 import java.io.IOException
@@ -55,6 +56,9 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
     private var currentPhotoPath: String = ""
 
+    private var mainLanguage: String = ""
+    private var mainTopics = listOf<String>()
+
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
             if (payload.type == Payload.Type.BYTES) {
@@ -67,9 +71,15 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
                         addMessage(Pair(chatMessage, 2))
                     }
                 } else {
-                    val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
-                    if (guests.participants != null) {
-                        guestList = guests.participants
+                    val languagesTopics = Gson().fromJson(String(payload.asBytes()!!), LanguagesTopics::class.java)
+                    if (languagesTopics.language != null && languagesTopics.topics != null) {
+                        mainLanguage = languagesTopics.language
+                        mainTopics = languagesTopics.topics
+                    } else {
+                        val guests = Gson().fromJson(String(payload.asBytes()!!), Participant::class.java)
+                        if (guests.participants != null) {
+                            guestList = guests.participants
+                        }
                     }
                 }
             } else if (payload.type == Payload.Type.FILE) {
@@ -259,5 +269,13 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
         ).apply {
             currentPhotoPath = absolutePath
         }
+    }
+
+    override fun getMainLanguage(): String {
+        return mainLanguage
+    }
+
+    override fun getMainTopic(): List<String> {
+        return mainTopics
     }
 }

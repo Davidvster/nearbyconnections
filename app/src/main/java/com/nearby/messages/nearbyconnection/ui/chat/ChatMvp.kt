@@ -35,5 +35,7 @@ interface ChatMvp : BaseMvp {
         fun refreshConnectionList()
         fun sendFile(uri: Uri? = null)
         fun attachImage(takePictureIntent: Intent, componentName: ComponentName)
+        fun getMainLanguage(): String
+        fun getMainTopic(): List<String>
     }
 }

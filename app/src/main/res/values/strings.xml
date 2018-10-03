@@ -12,6 +12,8 @@
     <string name="chat_message_input_hint">Enter message to send</string>
     <string name="chat_message_image_loading">The image is loading&#8230;</string>
     <string name="chat_message_image_loading_error">There was an error while loading the image</string>
+    <string name="chat_main_language_title">Language: %s</string>
+    <string name="chat_main_topic_title">Topic: %s</string>
 
     <string name="quiz_connect_room_title">Connect to a Quiz Room</string>
     <string name="quiz_connect_search">Searching for available quiz rooms&#8230;</string>
@@ -26,6 +28,7 @@
     <string name="quiz_points_list">%s currently has %s %s</string>
     <string name="quiz_points">Points:\n%s</string>
     <string name="quiz_input_question">Insert the question</string>
+    <string name="quiz_duration">Duration</string>
     <string name="quiz_input_answer_a">Answer A</string>
     <string name="quiz_input_answer_b">Answer B</string>
     <string name="quiz_input_answer_c">Answer C</string>
@@ -63,6 +66,20 @@
 
     <string name="permission_denied">A permission was denied</string>
     <string name="connection_ended">You have been disconnected.</string>
-    <string name="quiz_duration">Duration</string>
+
+    <array name="chat_colors">
+        <item name="chat_color_1">#a7c0cd</item>
+        <item name="chat_color_2">#b085f5</item>
+        <item name="chat_color_3">#80d6ff</item>
+        <item name="chat_color_4">#6ff9ff</item>
+        <item name="chat_color_5">#26a69a</item>
+        <item name="chat_color_6">#9ccc65</item>
+        <item name="chat_color_7">#ffff8b</item>
+        <item name="chat_color_8">#ffd95b</item>
+        <item name="chat_color_9">#ffa270</item>
+        <item name="chat_color_10">#ff867c</item>
+        <item name="chat_color_11">#be9c91</item>
+        <item name="chat_color_12">#ff77a9</item>
+    </array>
 
 </resources>

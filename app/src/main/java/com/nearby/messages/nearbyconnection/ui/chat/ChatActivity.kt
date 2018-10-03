@@ -198,16 +198,14 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
                 return true
             }
             R.id.guests_list -> {
-                if (presenter.getGuestList().isNotEmpty()) {
-                    GuestListDialog(this).init(presenter.getGuestList())
-                            .setPositiveButton { dialog ->
-                                dialog.dismiss()
-                            }
-                            .setTitleText(resources.getString(R.string.chat_guest_list_room_host, presenter.getHostUsername()))
-                            .show()
-                } else{
-                    Toast.makeText(this, resources.getString(R.string.guest_list_only_two_participants), Toast.LENGTH_LONG).show()
-                }
+                GuestListDialog(this).init(presenter.getGuestList())
+                        .setPositiveButton { dialog ->
+                            dialog.dismiss()
+                        }
+                        .setMainLanguage(presenter.getMainLanguage())
+                        .setMainTopic(presenter.getMainTopic())
+                        .setTitleText(resources.getString(R.string.chat_guest_list_room_host, presenter.getHostUsername()))
+                        .show()
             }
         }
         return false

@@ -21,10 +21,43 @@ class GuestListDialog(context: Context) : AppCompatDialog(context) {
             onPositiveClicked?.invoke(this)
         }
 
-        guestListAdapter = GuestListAdapter(context)
-        guestListAdapter.guestList = guestList
-        dialog_guest_list.layoutManager = LinearLayoutManager(context)
-        dialog_guest_list.adapter = guestListAdapter
+        if (guestList.isNotEmpty()){
+            dialog_guest_participants.visibility = View.VISIBLE
+            guestListAdapter = GuestListAdapter(context)
+            guestListAdapter.guestList = guestList
+            dialog_guest_list.layoutManager = LinearLayoutManager(context)
+            dialog_guest_list.adapter = guestListAdapter
+        }
+        return this
+    }
+
+    fun setMainLanguage(language: String): GuestListDialog {
+        if (language.isNotEmpty()) {
+            dialog_language.visibility = View.VISIBLE
+            dialog_language.text = context.resources.getString(R.string.chat_main_language_title, language)
+        }
+//        if (languages.isNotEmpty()) {
+//            dialog_language.visibility = View.VISIBLE
+//            val languageList = StringBuilder()
+//            for (language in languages.subList(0, languages.size-1)) {
+//                languageList.append("$language; ")
+//            }
+//            languageList.append(languages[languages.size-1])
+//        dialog_language.text = context.resources.getString(R.string.chat_main_language_title, languageList)
+//        }
+        return this
+    }
+
+    fun setMainTopic(topics: List<String>): GuestListDialog {
+        if (topics.isNotEmpty()) {
+            dialog_topic.visibility = View.VISIBLE
+            val topicList = StringBuilder()
+            for (topic in topics.subList(0, topics.size-1)) {
+                topicList.append("$topic; ")
+            }
+            topicList.append(topics[topics.size-1])
+            dialog_topic.text = context.resources.getString(R.string.chat_main_topic_title, topicList)
+        }
         return this
     }
 

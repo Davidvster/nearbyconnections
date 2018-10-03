@@ -22,6 +22,7 @@ import android.graphics.Color
 import com.nearby.messages.nearbyconnection.ui.views.CustomFlag
 import com.skydoves.colorpickerview.ColorPickerDialog
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import java.util.Random
 
 class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
 
@@ -42,7 +43,9 @@ class LobbyActivity : BaseActivity<LobbyMvp.Presenter>(), LobbyMvp.View {
             lobby_user_name.backgroundTintList = ColorStateList.valueOf( defaultEditColor )
         }
 
-        cardColor = ContextCompat.getColor(this, R.color.chat_color_1)
+//        val colorArray = resources.obtainTypedArray(R.array.chat_colors).getColor(Random().nextInt(12), 0)
+
+        cardColor = resources.obtainTypedArray(R.array.chat_colors).getColor(Random().nextInt(12), 0)
         lobby_chat_join.setOnClickListener {
             if (checkInputName()) {
                 ChatActivity.start(this, lobby_user_name.text.toString(), cardColor)

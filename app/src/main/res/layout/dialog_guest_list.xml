@@ -40,13 +40,32 @@
     </FrameLayout>
 
     <TextView
+        android:id="@+id/dialog_language"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_guest_owner_layout"/>
+
+    <TextView
+        android:id="@+id/dialog_topic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:padding="10dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_language"/>
+
+    <TextView
         android:id="@+id/dialog_guest_participants"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="15dp"
+        android:visibility="gone"
         android:text="@string/guest_list_dialog_guest_participant"
-        app:layout_constraintTop_toBottomOf="@+id/dialog_guest_owner_layout"/>
+        app:layout_constraintTop_toBottomOf="@+id/dialog_topic"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/dialog_guest_list"

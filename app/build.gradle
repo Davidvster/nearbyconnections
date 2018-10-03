@@ -45,6 +45,8 @@ internalLib(rxlifecycle)
 internalLib(threetenabp)
 internalLib(retrofit)
 internalLib(kperm)
+internalLib(okhttp)
+internalLib(timber)
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')

@@ -26,8 +26,14 @@ import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.data.model.Guest
 import com.nearby.messages.nearbyconnection.data.model.Participant
 import android.support.v4.util.SimpleArrayMap
+import com.nearby.messages.nearbyconnection.arch.DataModule
+import com.nearby.messages.nearbyconnection.arch.Languages.LANGUAGE_LIST
+import com.nearby.messages.nearbyconnection.data.managers.contract.TextRequestManager
+import com.nearby.messages.nearbyconnection.data.model.LanguagesTopics
+import com.nearby.messages.nearbyconnection.ext.rx.applyIoSchedulers
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -35,7 +41,7 @@ import java.util.Date
 import java.util.Locale
 
 
-class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val context: Context = AppModule.application) : BasePresenter<HostChatMvp.View>(hostChatView), HostChatMvp.Presenter {
+class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val context: Context = AppModule.application, private val textRequest: TextRequestManager = DataModule.textRequestManager) : BasePresenter<HostChatMvp.View>(hostChatView), HostChatMvp.Presenter {
 
     private lateinit var connectionsClient: ConnectionsClient
 
@@ -50,6 +56,12 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
     private val filePayloadReference = SimpleArrayMap<Long, Int>()
 
     private var currentPhotoPath: String = ""
+
+//    private var mainLanguages = HashMap<String, Int>()
+//    private var mainTopics = HashMap<String, Int>()
+
+    private var mainLanguage: String = ""
+    private var mainTopics = HashMap<String, Int>()
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
@@ -137,6 +149,15 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
 
     override fun addMessage(message: Pair<ChatMessage, Int>) {
         messageList.add(message)
+        val textToAnalyse = StringBuilder()
+        var start = 0
+        if (messageList.size > 10) {
+            start = messageList.size - 10
+        }
+        for (message in messageList.subList(start, messageList.size)) {
+            textToAnalyse.append(message.first.message + "\n")
+        }
+        analyseText(textToAnalyse.toString())
         view?.updateMessageList(messageList)
     }
 
@@ -214,7 +235,6 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
             )
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
             view?.startCameraActivity(takePictureIntent)
-
         }
     }
 
@@ -230,5 +250,77 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
         ).apply {
             currentPhotoPath = absolutePath
         }
+    }
+
+    private fun analyseText(text: String) {
+        subscription.add(
+                textRequest.getTextLanguage(text)
+                        .applyIoSchedulers()
+                        .subscribe({
+                            val language = it.get("data").asJsonObject.get("detections").asJsonArray.get(0).asJsonObject.get("language").asString
+                            if (LANGUAGE_LIST.containsKey(language)) {
+                                mainLanguage = LANGUAGE_LIST[language]?: "Not recognizable language"
+                            }
+//                            var count = mainLanguages[language] ?: 0
+//                            count ++
+//                            mainLanguages[language] = count
+                            subscription.add(
+                                textRequest.getTextSummary(language, text)
+                                        .applyIoSchedulers()
+                                        .subscribe({
+                                            if (it.get("topics") != null){
+                                                val topics = it.get("topics").asJsonArray
+                                                for (topic in topics) {
+                                                    var count = mainTopics[topic.asString]?: 0
+                                                    count ++
+                                                    mainTopics[topic.asString] =  count
+                                                }
+                                            }
+                                            sendLanguagesAndTopic()
+                                        }) {
+                                            Timber.d(it)
+                                        }
+                            )
+                        })
+                        {
+                            Timber.d(it)
+                        }
+        )
+    }
+
+    private fun sendLanguagesAndTopic() {
+        val languagesTopics = LanguagesTopics(getMainLanguage(), getMainTopic())
+        connectionsClient.sendPayload(guests.map { it.endpointId }, Payload.fromBytes(Gson().toJson(languagesTopics).toByteArray()))
+    }
+
+    override fun getMainLanguage(): String {
+//        var count: Int? = null
+//        var topLanguage: MutableList<String> = mutableListOf()
+//        for (entry in mainLanguages.entries) {
+//            if (count == null || entry.value > count) {
+//                count = entry.value
+//                topLanguage = mutableListOf()
+//                topLanguage.add(entry.key)
+//            } else if (entry.value == count) {
+//                topLanguage.add(entry.key)
+//            }
+//        }
+//        return topLanguage
+        return mainLanguage
+    }
+
+    override fun getMainTopic(): List<String> {
+        var count: Int? = null
+        var topTopic: MutableList<String> = mutableListOf()
+        for (entry in mainTopics.entries) {
+            if (count == null || entry.value > count) {
+                count = entry.value
+                topTopic = mutableListOf()
+                topTopic.add(entry.key)
+            } else if (entry.value == count) {
+                topTopic.add(entry.key)
+            }
+        }
+        return topTopic
     }
 }

@@ -29,5 +29,7 @@ interface HostChatMvp : BaseMvp {
         fun getGuestList(): List<String>
         fun attachImage(takePictureIntent: Intent, componentName: ComponentName)
         fun sendFile(uri: Uri? = null)
+        fun getMainLanguage(): String
+        fun getMainTopic(): List<String>
     }
 }

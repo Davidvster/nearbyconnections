@@ -2,6 +2,7 @@ package com.nearby.messages.nearbyconnection.ui.hostchat
 
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.Presentation
 import android.content.Intent
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
@@ -81,8 +82,6 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         }
     }
 
-
-
     override fun showJoinDialog(user: String, endpointId: String) {
         val builder = AlertDialog.Builder(this)
         builder.setTitle(resources.getString(R.string.dialog_request_title))
@@ -138,14 +137,14 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
                 return true
             }
             R.id.guests_list -> {
-                if (presenter.getGuestList().isNotEmpty()) {
-                    GuestListDialog(this).init(presenter.getGuestList())
-                            .setPositiveButton { dialog ->
-                                dialog.dismiss()
-                            }
-                            .setTitleText(resources.getString(R.string.chat_host_room_title))
-                            .show()
-                }
+                GuestListDialog(this).init(presenter.getGuestList())
+                        .setPositiveButton { dialog ->
+                            dialog.dismiss()
+                        }
+                        .setMainLanguage(presenter.getMainLanguage())
+                        .setMainTopic(presenter.getMainTopic())
+                        .setTitleText(resources.getString(R.string.chat_host_room_title, username))
+                        .show()
             }
         }
         return false
