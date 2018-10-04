@@ -23,7 +23,13 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         buildConfigField "String", "CHAT_ID", "\".chat\""
         buildConfigField "String", "QUIZ_ID", "\".quiz\""
+
+        buildConfigField "String", "LANGUAGE_BASE_URL", "\"https://ws.detectlanguage.com/0.2/\""
+        buildConfigField "String", "LANGUAGE_API_KEY", "\"77603b6d103c45ad94fde80b573b452e\""
+        buildConfigField "String", "TISANE_BASE_URL", "\"https://api.tisane.ai\""
+        buildConfigField "String", "TISANE_API_KEY", "\"ac9dcf7f28e24aa3c0fbd0d90be6ea2b\""
         multiDexEnabled true
+
     }
     buildTypes {
         release {
@@ -63,4 +69,8 @@ dependencies {
     implementation 'joda-time:joda-time:2.9.9'
     implementation 'com.squareup.picasso:picasso:2.5.0'
     implementation 'com.github.chrisbanes:PhotoView:2.0.0'
+
+    implementation 'com.clarifai.clarifai-api2:core:2.3.0'
+
+    implementation ("com.github.Cloudmersive:Cloudmersive.APIClient.Java:v2.20") { exclude group: 'org.threeten' }
 }

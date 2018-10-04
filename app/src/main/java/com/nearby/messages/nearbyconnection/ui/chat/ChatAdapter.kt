@@ -19,6 +19,8 @@ class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatA
 
     var onImageClicked: ((fileUri: String) -> Unit)? = null
 
+    var onImageLongPressed: ((fileUri: Uri) -> Unit)? = null
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatAdapter.ViewHolder {
         when (viewType) {
             1 -> {
@@ -56,6 +58,10 @@ class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatA
                         imageView.visibility = View.VISIBLE
                         imageView.setOnClickListener {
                             onImageClicked!!.invoke(message.pictureUri!!.toString())
+                        }
+                        imageView.setOnLongClickListener {
+                            onImageLongPressed!!.invoke(message.pictureUri!!)
+                            true
                         }
                     } else {
                         holder.itemView.findViewById<TextView>(R.id.message_content_message).text = context.resources.getString(R.string.chat_message_image_loading_error)

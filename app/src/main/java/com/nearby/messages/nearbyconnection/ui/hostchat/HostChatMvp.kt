@@ -13,6 +13,7 @@ interface HostChatMvp : BaseMvp {
         fun showJoinDialog(user: String, endpointId: String)
         fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>, position: Int)
         fun startCameraActivity(takePictureIntent: Intent)
+        fun showImageDescriptionDialog(title: String, desc: String)
     }
 
     interface Presenter : BaseMvp.Presenter {
@@ -31,5 +32,6 @@ interface HostChatMvp : BaseMvp {
         fun sendFile(uri: Uri? = null)
         fun getMainLanguage(): String
         fun getMainTopic(): List<String>
+        fun recognizeImage(imageUri: Uri)
     }
 }

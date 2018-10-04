@@ -23,38 +23,37 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
-                android:id="@+id/message_content_user_layout"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/message_content_user"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintStart_toStartOf="parent">
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:textColor="@android:color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:maxLines="1"
+                android:ellipsize="end"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/message_content_date"
+                tools:text="UserName" />
 
-                <TextView
-                    android:id="@+id/message_content_user"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="5dp"
-                    android:textColor="@android:color/black"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:text="UserName" />
-
-                <TextView
-                    android:id="@+id/message_content_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:paddingBottom="5dp"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="10dp"
-                    android:paddingTop="5dp"
-                    android:textSize="12sp"
-                    tools:text="2.5.2018 2:55" />
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/message_content_date"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingBottom="5dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="5dp"
+                android:textSize="12sp"
+                android:layout_gravity="end"
+                app:layout_constraintStart_toEndOf="@+id/message_content_user"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="2.5.2018 2:55" />
 
             <TextView
                 android:id="@+id/message_content_message"
@@ -65,7 +64,7 @@
                 android:paddingRight="16dp"
                 android:layout_marginBottom="20dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/message_content_user_layout"
+                app:layout_constraintTop_toBottomOf="@+id/message_content_user"
                 tools:text="Message"/>
 
             <ImageView
@@ -79,7 +78,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/message_content_user_layout"
+                app:layout_constraintTop_toBottomOf="@+id/message_content_user"
                 tools:src="@drawable/ic_launcher_img"
                 tools:visibility="visible" />
 

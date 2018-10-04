@@ -1,6 +1,7 @@
 package com.nearby.messages.nearbyconnection.arch
 
-import android.util.Log
+import com.nearby.messages.nearbyconnection.BuildConfig
+import com.nearby.messages.nearbyconnection.data.api.ImageService
 import com.nearby.messages.nearbyconnection.data.api.LanguageService
 import com.nearby.messages.nearbyconnection.data.api.TextTisaneService
 import okhttp3.OkHttpClient
@@ -20,21 +21,16 @@ internal object ApiModule {
         retrofitLanguage.create(LanguageService::class.java)
     }
 
+    internal val imageService by lazy {
+        retrofitImage.create(ImageService::class.java)
+    }
+
     private val retrofitText by lazy {
         Retrofit.Builder()
-                .baseUrl("https://api.tisane.ai/")
+                .baseUrl(BuildConfig.TISANE_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(okHttpClientText)
-                .build()
-    }
-
-    private val retrofitLanguage by lazy {
-        Retrofit.Builder()
-                .baseUrl("https://ws.detectlanguage.com/0.2/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(okHttpClientLanguage)
                 .build()
     }
 
@@ -44,10 +40,19 @@ internal object ApiModule {
                         .setLevel(HttpLoggingInterceptor.Level.BODY))
                 .addNetworkInterceptor { chain ->
                     var request = chain.request().newBuilder()
-                            .addHeader("Ocp-Apim-Subscription-Key", "77603b6d103c45ad94fde80b573b452e")
+                            .addHeader(TISANE_SUBSCRIPTION_KEY_HEADER, BuildConfig.TISANE_API_KEY)
                             .build()
                     chain.proceed(request)
                 }
+                .build()
+    }
+
+    private val retrofitLanguage by lazy {
+        Retrofit.Builder()
+                .baseUrl(BuildConfig.LANGUAGE_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .client(okHttpClientLanguage)
                 .build()
     }
 
@@ -57,10 +62,35 @@ internal object ApiModule {
                         .setLevel(HttpLoggingInterceptor.Level.BODY))
                 .addNetworkInterceptor { chain ->
                     var request = chain.request().newBuilder()
-                            .addHeader("Authorization", "Bearer ac9dcf7f28e24aa3c0fbd0d90be6ea2b")
+                            .addHeader(LANGUAGE_AUTH_HEADER, LANGUAGE_AUTH_KEY_PREFIX + BuildConfig.LANGUAGE_API_KEY)
                             .build()
                     chain.proceed(request)
                 }
                 .build()
     }
+
+    private val retrofitImage by lazy {
+        Retrofit.Builder()
+                .baseUrl("https://waila.ml/api/vision/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .client(okHttpClientImage)
+                .build()
+    }
+
+    private val okHttpClientImage by lazy {
+        OkHttpClient.Builder()
+                .addInterceptor(HttpLoggingInterceptor { message -> Timber.d(message) }
+                        .setLevel(HttpLoggingInterceptor.Level.BODY))
+                .addNetworkInterceptor { chain ->
+                    var request = chain.request().newBuilder()
+                            .build()
+                    chain.proceed(request)
+                }
+                .build()
+    }
+
+    private const val TISANE_SUBSCRIPTION_KEY_HEADER = "Ocp-Apim-Subscription-Key"
+    private const val LANGUAGE_AUTH_HEADER = "Authorization"
+    private const val LANGUAGE_AUTH_KEY_PREFIX = "Bearer "
 }
