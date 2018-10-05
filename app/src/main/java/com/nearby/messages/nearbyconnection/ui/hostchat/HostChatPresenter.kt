@@ -28,30 +28,25 @@ import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.data.model.Guest
 import com.nearby.messages.nearbyconnection.data.model.Participant
 import android.support.v4.util.SimpleArrayMap
-import android.util.Log
-import com.cloudmersive.client.RecognizeApi
-import com.cloudmersive.client.invoker.ApiException
-import com.cloudmersive.client.invoker.Configuration
-import com.cloudmersive.client.invoker.auth.ApiKeyAuth
+import com.google.firebase.FirebaseApp
+import com.google.firebase.ml.vision.FirebaseVision
+import com.google.firebase.ml.vision.common.FirebaseVisionImage
+import com.google.firebase.ml.vision.label.FirebaseVisionLabelDetectorOptions
 import com.nearby.messages.nearbyconnection.arch.DataModule
 import com.nearby.messages.nearbyconnection.arch.Languages.LANGUAGE_LIST
-import com.nearby.messages.nearbyconnection.data.managers.contract.TextRequestManager
+import com.nearby.messages.nearbyconnection.data.managers.contract.RecognizeRequestManager
 import com.nearby.messages.nearbyconnection.data.model.LanguagesTopics
 import com.nearby.messages.nearbyconnection.ext.rx.applyIoSchedulers
 import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import timber.log.Timber
-import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.concurrent.thread
 
-class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val context: Context = AppModule.application, private val textRequest: TextRequestManager = DataModule.textRequestManager) : BasePresenter<HostChatMvp.View>(hostChatView), HostChatMvp.Presenter {
+class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val context: Context = AppModule.application, private val recognizeRequest: RecognizeRequestManager = DataModule.textRequestManager) : BasePresenter<HostChatMvp.View>(hostChatView), HostChatMvp.Presenter {
 
     private lateinit var connectionsClient: ConnectionsClient
 
@@ -68,6 +63,8 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
     private var currentPhotoPath: String = ""
     private var mainLanguage: String = ""
     private var mainTopics = HashMap<String, Int>()
+
+    private lateinit var fireVisionOptions: FirebaseVisionLabelDetectorOptions
 
     private val payloadCallback = object : PayloadCallback() {
         override fun onPayloadReceived(endpointId: String, payload: Payload) {
@@ -259,7 +256,7 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
 
     private fun analyseText(text: String) {
         subscription.add(
-                textRequest.getTextLanguage(text)
+                recognizeRequest.getTextLanguage(text)
                         .applyIoSchedulers()
                         .subscribe({
                             val language = it.get("data").asJsonObject.get("detections").asJsonArray.get(0).asJsonObject.get("language").asString
@@ -267,7 +264,7 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
                                 mainLanguage = LANGUAGE_LIST[language]?: ""
                             }
                             subscription.add(
-                                textRequest.getTextSummary(language, text)
+                                recognizeRequest.getTextSummary(language, text)
                                         .applyIoSchedulers()
                                         .subscribe({
                                             if (it.get("topics") != null){
@@ -289,19 +286,6 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
                         }
         )
     }
-
-//    private fun analyseImage(imageUri: Uri) {
-//        subscription.add(
-//                textRequest.getImageClassification(imageUri)
-//                        .applyIoSchedulers()
-//                        .subscribe({
-//                            Log.v("SLIKA", it.toString())
-//                        })
-//                        {
-//                            Log.v("SLIKANAPAKA", it.toString())
-//                        }
-//        )
-//    }
 
     private fun sendLanguagesAndTopic() {
         val languagesTopics = LanguagesTopics(getMainLanguage(), getMainTopic())
@@ -327,52 +311,58 @@ class HostChatPresenter constructor(hostChatView: HostChatMvp.View, private val 
         return topTopic
     }
 
+    //to change
     override fun recognizeImage(imageUri: Uri) {
-        thread {
-            val f = File(context.cacheDir, "tmp_img")
-            f.createNewFile()
-
-            val options = BitmapFactory.Options()
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888
-            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, imageUri)
-            val stream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
-            val byteArray = stream.toByteArray()
-
-            val fos = FileOutputStream(f)
-            fos.write(byteArray)
-            fos.flush()
-            fos.close()
+        subscription.add(
+                recognizeRequest.recognizeImage(imageUri)
+                        .applyIoSchedulers()
+                        .subscribe({
+                            view?.showImageDescriptionDialog(it.first, it.second)
+                        }) {
+                            Timber.d(it)
+                        }
+        )
 
 
-            val defaultClient = Configuration.getDefaultApiClient()
-
-            val Apikey = defaultClient.getAuthentication("Apikey") as ApiKeyAuth
-            Apikey.apiKey = "d0785b33-c008-48a5-86c4-c55d34ea69a6"
-
-            val apiInstance = RecognizeApi()
-
-
-            try {
-                var objects = ""
-                val result = apiInstance.recognizeDetectObjects(f)
-                if (result.objectCount == 0) {
-                    Log.v("NAJDENO: ", "not found")
-                    objects = "nothing found"
-                } else {
-                    for (found in result.objects) {
-                        objects += found.objectClassName + " "
-                        Log.v("NAJDENO: ", found.objectClassName)
-                    }
-                }
-                val result2 = apiInstance.recognizeDescribe(f)
-                Log.v("NAJDENO2BEST", result2.bestOutcome.description)
-                Log.v("NAJDENO2SECOND", result2.runnerUpOutcome.description)
-                view?.showImageDescriptionDialog(objects, result2.bestOutcome.description + " CONFIDENCE: " + result2.bestOutcome.confidenceScore)
-
-            } catch (e: ApiException) {
-                e.printStackTrace()
-            }
-        }
+//        thread {
+//        val f = File(context.cacheDir, "tmp_img")
+//        f.createNewFile()
+//            val stream = ByteArrayOutputStream()
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+//            val byteArray = stream.toByteArray()
+//
+//            val fos = FileOutputStream(f)
+//            fos.write(byteArray)
+//            fos.flush()
+//            fos.close()
+//
+//            val defaultClient = Configuration.getDefaultApiClient()
+//
+//            val Apikey = defaultClient.getAuthentication("Apikey") as ApiKeyAuth
+//            Apikey.apiKey = "d0785b33-c008-48a5-86c4-c55d34ea69a6"
+//
+//            val apiInstance = RecognizeApi()
+//
+//            try {
+//                var objects = ""
+//                val result = apiInstance.recognizeDetectObjects(f)
+//                if (result.objectCount == 0) {
+//                    Log.v("NAJDENO: ", "not found")
+//                    objects = "nothing found"
+//                } else {
+//                    for (found in result.objects) {
+//                        objects += found.objectClassName + " "
+//                        Log.v("NAJDENO: ", found.objectClassName)
+//                    }
+//                }
+//                val result2 = apiInstance.recognizeDescribe(f)
+//                Log.v("NAJDENO2BEST", result2.bestOutcome.description)
+//                Log.v("NAJDENO2SECOND", result2.runnerUpOutcome.description)
+//                view?.showImageDescriptionDialog(objects, result2.bestOutcome.description + " CONFIDENCE: " + result2.bestOutcome.confidenceScore)
+//
+//            } catch (e: ApiException) {
+//                e.printStackTrace()
+//            }
+//        }
     }
 }

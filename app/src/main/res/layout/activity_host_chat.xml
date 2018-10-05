@@ -31,6 +31,21 @@
         app:layout_constraintTop_toBottomOf="@+id/host_chat_toolbar_layout"
         app:layout_constraintBottom_toTopOf="@+id/chat_input_layout"/>
 
+    <FrameLayout
+        android:id="@+id/connection_progress"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/progress_bg"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
+
+    </FrameLayout>
+
     <android.support.v7.widget.CardView
         android:id="@+id/chat_input_layout"
         android:layout_width="0dp"

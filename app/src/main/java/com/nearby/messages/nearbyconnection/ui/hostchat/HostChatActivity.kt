@@ -50,14 +50,17 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
 
         chatAdapter.onImageClicked = { ViewImageActivity.start(this, it)}
 
+        //to change
         chatAdapter.onImageLongPressed = {
             val builder = AlertDialog.Builder(this)
             builder.setTitle("Doyou want the API to describe the picture?")
-            builder.setPositiveButton("Yes") { _, _ -> presenter.recognizeImage(it) }
+            builder.setPositiveButton("Yes") { _, _ ->
+                presenter.recognizeImage(it)
+                connection_progress.visibility = View.VISIBLE
+            }
             builder.setNegativeButton("Cancel") {_, _ ->}
             val dialog = builder.create()
             dialog.show()
-            presenter.recognizeImage(it)
         }
 
         chat_send.setOnClickListener {
@@ -124,8 +127,10 @@ class HostChatActivity : BaseActivity<HostChatMvp.Presenter>(), HostChatMvp.View
         startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
     }
 
+    //to change
     override fun showImageDescriptionDialog(title: String, desc: String) {
         runOnUiThread {
+            connection_progress.visibility = View.GONE
             val builder = AlertDialog.Builder(this)
             builder.setTitle(title)
             builder.setMessage(desc)
