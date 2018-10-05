@@ -26,16 +26,21 @@ import com.nearby.messages.nearbyconnection.BuildConfig
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.arch.AppModule
 import com.nearby.messages.nearbyconnection.arch.BasePresenter
+import com.nearby.messages.nearbyconnection.arch.DataModule
+import com.nearby.messages.nearbyconnection.data.managers.contract.RecognizeRequestManager
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.data.model.LanguagesTopics
 import com.nearby.messages.nearbyconnection.data.model.Participant
+import com.nearby.messages.nearbyconnection.ext.rx.applyIoSchedulers
+import timber.log.Timber
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Context = AppModule.application) : BasePresenter<ChatMvp.View>(chatView), ChatMvp.Presenter {
+class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Context = AppModule.application,
+                                private val recognizeRequest: RecognizeRequestManager = DataModule.textRequestManager) : BasePresenter<ChatMvp.View>(chatView), ChatMvp.Presenter {
 
     private lateinit var connectionsClient: ConnectionsClient
 
@@ -277,5 +282,17 @@ class ChatPresenter constructor(chatView: ChatMvp.View, private val context: Con
 
     override fun getMainTopic(): List<String> {
         return mainTopics
+    }
+
+    override fun recognizeImage(imageUri: Uri) {
+        subscription.add(
+                recognizeRequest.recognizeImage(imageUri)
+                        .applyIoSchedulers()
+                        .subscribe({
+                            view?.showImageDescriptionDialog(it.first, it.second)
+                        }) {
+                            Timber.d(it)
+                        }
+        )
     }
 }

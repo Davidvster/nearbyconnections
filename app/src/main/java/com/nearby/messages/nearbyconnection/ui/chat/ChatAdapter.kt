@@ -53,6 +53,10 @@ class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatA
                         imageView.setOnClickListener {
                             onImageClicked!!.invoke(Uri.fromFile(message.picture).toString())
                         }
+                        imageView.setOnLongClickListener {
+                            onImageLongPressed!!.invoke(Uri.fromFile(message.picture!!))
+                            true
+                        }
                     } else if (message.pictureUri != null) {
                         Picasso.with(context).load(message.pictureUri).resize(800, 800).centerInside().into(imageView)
                         imageView.visibility = View.VISIBLE

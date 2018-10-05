@@ -18,6 +18,7 @@ interface ChatMvp : BaseMvp {
         fun stopRefreshConnectionList()
         fun updateMessageList(messageList: List<Pair<ChatMessage, Int>>, position: Int)
         fun startCameraActivity(takePictureIntent: Intent)
+        fun showImageDescriptionDialog(title: String, desc: String)
     }
 
     interface Presenter : BaseMvp.Presenter {
@@ -37,5 +38,6 @@ interface ChatMvp : BaseMvp {
         fun attachImage(takePictureIntent: Intent, componentName: ComponentName)
         fun getMainLanguage(): String
         fun getMainTopic(): List<String>
+        fun recognizeImage(imageUri: Uri)
     }
 }

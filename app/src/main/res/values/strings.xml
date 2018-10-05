@@ -66,6 +66,13 @@
 
     <string name="permission_denied">A permission was denied</string>
     <string name="connection_ended">You have been disconnected.</string>
+    <string name="image_recognize_none">Could not recognize any object in this image.</string>
+    <string name="image_recognize_found">Found:</string>
+    <string name="image_recognize_error">Error:</string>
+    <string name="image_recognize_error_description">An error appeared while analysing the image.</string>
+    <string name="image_recognize_prompt">Do you want the API to describe the picture?</string>
+    <string name="image_recognize_accept">Yes</string>
+    <string name="image_recognize_cancel">Cancel</string>
 
     <array name="chat_colors">
         <item name="chat_color_1">#a7c0cd</item>

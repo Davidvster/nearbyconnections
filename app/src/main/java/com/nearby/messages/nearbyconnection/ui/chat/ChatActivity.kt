@@ -1,6 +1,7 @@
 package com.nearby.messages.nearbyconnection.ui.chat
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import com.nearby.messages.nearbyconnection.arch.BaseActivity
 import android.os.Bundle
@@ -10,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.model.ChatMessage
 import com.nearby.messages.nearbyconnection.ui.viewimage.ViewImageActivity
@@ -50,15 +50,27 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         connection_content.layoutManager = LinearLayoutManager(this)
         connection_content.adapter = connectionAdapter
 
+        connectionAdapter.onRoomClicked =  {
+            setProgressVisible(true)
+            presenter.requestConnection(it)
+        }
+
         chatAdapter = ChatAdapter(this)
         chat_content.layoutManager = LinearLayoutManager(this)
         chat_content.adapter = chatAdapter
 
         chatAdapter.onImageClicked = { ViewImageActivity.start(this, it)}
 
-        connectionAdapter.onRoomClicked =  {
-            setProgressVisible(true)
-            presenter.requestConnection(it)
+        chatAdapter.onImageLongPressed = {
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle(resources.getString(R.string.image_recognize_prompt))
+            builder.setPositiveButton(resources.getString(R.string.image_recognize_accept)) { _, _ ->
+                presenter.recognizeImage(it)
+                connection_progress.visibility = View.VISIBLE
+            }
+            builder.setNegativeButton(resources.getString(R.string.image_recognize_cancel)) {_, _ ->}
+            val dialog = builder.create()
+            dialog.show()
         }
 
         chat_send.setOnClickListener {
@@ -163,6 +175,17 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         chatAdapter.messagesList = messageList
         chatAdapter.notifyItemChanged(position)
         chat_input.text = null
+    }
+
+    override fun showImageDescriptionDialog(title: String, desc: String) {
+        runOnUiThread {
+            connection_progress.visibility = View.GONE
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle(title)
+            builder.setMessage(desc)
+            val dialog = builder.create()
+            dialog.show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

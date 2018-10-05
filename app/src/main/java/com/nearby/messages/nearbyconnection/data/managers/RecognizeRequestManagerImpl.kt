@@ -10,6 +10,7 @@ import com.google.firebase.ml.vision.FirebaseVision
 import com.google.firebase.ml.vision.common.FirebaseVisionImage
 import com.google.firebase.ml.vision.label.FirebaseVisionLabelDetectorOptions
 import com.google.gson.JsonObject
+import com.nearby.messages.nearbyconnection.R
 import com.nearby.messages.nearbyconnection.data.api.TextTisaneService
 import com.nearby.messages.nearbyconnection.data.managers.contract.RecognizeRequestManager
 import io.reactivex.Single
@@ -61,13 +62,13 @@ class RecognizeRequestManagerImpl constructor(private val context: Context = App
                             objects += label.label + "; "
                         }
                         if (objects.isEmpty()) {
-                            objects = "Could not recognize any object in this image."
+                            objects = context.resources.getString(R.string.image_recognize_none)
                         }
-                        single.onSuccess(Pair("Found", objects))
+                        single.onSuccess(Pair(context.resources.getString(R.string.image_recognize_found), objects))
                     }
                     .addOnFailureListener { it ->
                         Timber.d(it)
-                        single.onSuccess(Pair("Error:", "An error appeared while analysing the image."))
+                        single.onSuccess(Pair(context.resources.getString(R.string.image_recognize_error),context.resources.getString(R.string.image_recognize_error_description)))
                     }
         }
     }
