@@ -27,6 +27,7 @@
                 android:id="@+id/message_content_user"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                app:layout_constraintWidth_min="100dp"
                 android:paddingBottom="5dp"
                 android:paddingLeft="10dp"
                 android:paddingRight="10dp"

@@ -39,7 +39,6 @@ class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatA
 
     override fun onBindViewHolder(holder: ChatAdapter.ViewHolder, position: Int) {
         messagesList[holder.adapterPosition].first.let { message ->
-            holder.itemView.findViewById<TextView>(R.id.message_content_user).text = message.user
             val imageView = holder.itemView.findViewById<ImageView>(R.id.message_content_image)
             imageView.visibility = View.GONE
             if (message.type == 2) {
@@ -74,6 +73,7 @@ class ChatAdapter constructor(val context: Context) : RecyclerView.Adapter<ChatA
             } else {
                 holder.itemView.findViewById<TextView>(R.id.message_content_message).text = message.message
             }
+            holder.itemView.findViewById<TextView>(R.id.message_content_user).text = message.user
             holder.itemView.findViewById<TextView>(R.id.message_content_date).text = message.date
             holder.itemView.findViewById<CardView>(R.id.message_content_user_card).setCardBackgroundColor(message.color)
         }

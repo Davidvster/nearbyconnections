@@ -110,7 +110,6 @@ class ChatActivity : BaseActivity<ChatMvp.Presenter>(), ChatMvp.View {
         }
     }
 
-
     override fun startCameraActivity(takePictureIntent: Intent) {
         startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
     }

@@ -20,12 +20,13 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent">
                 <TextView
                     android:id="@+id/message_content_user"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    app:layout_constraintWidth_min="100dp"
                     android:paddingBottom="5dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
@@ -36,8 +37,8 @@
                     android:maxLines="1"
                     android:ellipsize="end"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/message_content_date"
+                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="UserName" />
 
                 <TextView
@@ -47,7 +48,7 @@
                     android:paddingBottom="5dp"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
-                    android:paddingTop="5dp"
+                    android:paddingTop="9dp"
                     android:textSize="12sp"
                     android:layout_gravity="end"
                     app:layout_constraintStart_toEndOf="@+id/message_content_user"
