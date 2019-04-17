@@ -9,7 +9,7 @@ android {
         release {
             keyAlias 'release'
             keyPassword 'release'
-            storeFile file('/Users/david.valic/AndroidStudioProjects/0 random/NearbyConnection/build/release.jks')
+            storeFile file('release.jks')
             storePassword 'release'
         }
     }
